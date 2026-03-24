@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AAKRUTI 2026 | Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ds-blue': '#0055A4', // Dassault Systèmes Corporate Blue
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        html, body { height: 100vh; width: 100vw; overflow: hidden; background-color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .sw-red { color: #E82127; }
+        .bg-sw-red { background-color: #E82127; }
+        .section-content { display: none; }
+        .section-active { display: block; animation: fadeIn 0.4s ease-out; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .sidebar-item.active { background-color: #E82127; color: white; box-shadow: 0 4px 15px rgba(232, 33, 39, 0.2); }
+
+        /* Roadmap Styling */
+        .roadmap-wrapper { display: flex; justify-content: space-between; align-items: flex-start; position: relative; width: 100%; }
+        .step-container { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 10; }
+        .icon-circle { 
+            width: clamp(24px, 3vw, 44px); height: clamp(24px, 3vw, 44px); 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            background: white; border: 2px solid #e2e8f0; color: #cbd5e1; font-size: clamp(10px, 1vw, 16px); margin-bottom: 8px; transition: all 0.4s; 
+        }
+        .step-container.completed .icon-circle { background: #E82127; border-color: #E82127; color: white; }
+        .step-container.active .icon-circle { border-color: #E82127; color: #E82127; transform: scale(1.1); box-shadow: 0 0 10px rgba(232, 33, 39, 0.1); }
+        .step-text { font-size: clamp(7px, 0.7vw, 9px); font-weight: 800; text-transform: uppercase; text-align: center; color: #94a3b8; max-width: 80px; }
+        .line-bg { position: absolute; top: clamp(12px, 1.5vw, 22px); left: 5%; right: 5%; height: 2px; background: #f1f5f9; z-index: 0; }
+        .line-fill { height: 100%; background: #E82127; width: 0%; transition: width 1s ease; }
+
+        .modal-overlay { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px); }
+
+        /* Theme Tiles */
+        .theme-tile.selected { border-color: #4f46e5; background-color: #eff6ff; transform: translateY(-3px); box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.2); }
+        .theme-tile.selected .tile-icon { background-color: #4f46e5; color: white; }
+
+        /* Custom Scrollbar for Announcements */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f8fafc; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+		
+		/* --- ULTIMATE PRINT FIX FOR CERTIFICATE --- */
+        @media print {
+            /* 1. Reset standard paper margins to a safe 5mm */
+            @page { margin: 5mm; }
+
+            /* 2. Hide everything except the modal */
+            body > *:not(#resultModal) {
+                display: none !important;
+            }
+
+            html, body {
+                display: block !important;
+                height: auto !important;
+                width: 100% !important;
+                background-color: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            /* 3. Strip the outer padding that pushes the box off the right edge */
+            #resultModal {
+                display: block !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                padding: 0 !important; /* KILLS THE p-4 */
+                margin: 0 !important;
+                background: white !important;
+            }
+
+            #resultModal > div {
+                display: block !important;
+                width: 100% !important;
+                padding: 0 !important; /* KILLS THE p-3 */
+                margin: 0 !important;
+                box-shadow: none !important;
+                max-height: none !important;
+            }
+
+            /* 4. THE BORDER FIX: Target the inner bordered box directly */
+            #resultModal > div > div.border-\\[3px\\] {
+                display: block !important;
+                width: auto !important; 
+                margin: 10mm 15mm 10mm 10mm !important; /* Extra margin on the right to protect the border */
+                padding: 20px !important; /* Shrinks the inner padding slightly so it fits on 1 page */
+                box-sizing: border-box !important;
+                border: 2px solid #e2e8f0 !important; /* Forces a crisp border for the printer */
+                page-break-inside: avoid !important; /* Forces the printer to keep the bottom border intact */
+                height: auto !important;
+                max-height: none !important;
+                overflow: visible !important;
+            }
+
+            /* 5. Ensure comments expand safely */
+            #resultModal .custom-scrollbar,
+            #resultComments {
+                overflow: visible !important;
+                height: auto !important;
+                max-height: none !important;
+                white-space: normal !important;
+            }
+
+            /* 6. Strip flexbox heights */
+            #resultModal .flex-1, 
+            #resultModal .flex-col {
+                display: block !important;
+                height: auto !important;
+                flex: none !important;
+            }
+
+            /* 7. Hide UI fluff */
+            .print-hide { display: none !important; }
+        }
+		
+    </style>
+</head>
+<body class="flex h-screen w-screen overflow-hidden">
+
+    <aside class="w-64 bg-white border-r flex flex-col flex-shrink-0">
+        <div class="p-8 border-b flex justify-center">
+            <img src="https://github.com/surajgajbhiye15/index/blob/main/Aakruti%20Logo.png?raw=true" alt="Logo" class="h-10">
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <button onclick="showSection('home', this)" class="sidebar-item active w-full flex items-center p-3 rounded-xl transition-all font-bold group">
+                <i class="fa-solid fa-house mr-3"></i> Home
+            </button>
+            <button onclick="showSection('team', this)" class="sidebar-item w-full flex items-center p-3 rounded-xl text-gray-400 hover:bg-gray-100 transition-all font-bold group">
+                <i class="fa-solid fa-users mr-3"></i> Team Details
+            </button>
+            <button onclick="showSection('tasks', this)" class="sidebar-item w-full flex items-center p-3 rounded-xl text-gray-400 hover:bg-gray-100 transition-all font-bold group">
+                <i class="fa-solid fa-list-check mr-3"></i> Assigned Tasks
+            </button>
+            <button onclick="showSection('wiki', this)" class="sidebar-item w-full flex items-center p-3 rounded-xl text-gray-400 hover:bg-gray-100 transition-all font-bold group">
+                <i class="fa-solid fa-book-open mr-3"></i> Wiki
+            </button>
+        </nav>
+        <div class="p-4 border-t">
+            <button onclick="handleLogout()" class="w-full flex items-center p-3 text-gray-400 font-bold hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
+                <i class="fa-solid fa-right-from-bracket mr-3"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0">
+        
+        <header class="h-16 bg-white border-b px-8 flex justify-between items-center flex-shrink-0">
+            <h2 id="sectionTitle" class="text-lg font-black text-ds-blue uppercase italic tracking-tighter">Home Page</h2>
+            <div class="flex items-center gap-4">
+                <span id="displayTeamID" class="text-xs font-bold text-gray-400 bg-gray-50 px-3 py-1 rounded-lg border">Team ID: ---</span>
+                <div class="h-10 w-10 bg-sw-red rounded-xl flex items-center justify-center text-white font-black shadow-md" id="headerInitial">?</div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-8">
+            
+            <section id="home" class="section-content section-active">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-black text-ds-blue tracking-tight">Welcome, <span id="homeTeamName" class="sw-red">---</span></h1>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full mt-2 border border-gray-200">
+                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Theme:</span>
+                        <p id="homeThemeHeader" class="text-xs font-bold text-gray-700 italic">---</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-10 rounded-[2.5rem] shadow-sm border border-gray-100 mb-8 relative z-50">
+                    <div class="roadmap-wrapper">
+                        <div class="line-bg"><div class="line-fill" id="progressLine"></div></div>
+                        
+                        <div class="step-container group cursor-pointer">
+                            <div class="icon-circle relative z-10"><i class="fa-solid fa-check"></i></div>
+                            <p class="step-text">Registration</p>
+                            
+                            <div class="absolute top-[calc(100%+10px)] left-0 w-48 bg-white rounded-2xl p-4 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] scale-95 group-hover:scale-100 pointer-events-none text-left">
+                                <h5 class="text-xs font-black text-ds-blue uppercase mb-1">Registration</h5>
+                                <p class="text-[12px] text-gray-500 mb-3 leading-relaxed font-medium">Successfully formed your squad and registered for AAKRUTI 2026.</p>
+                                <div class="bg-red-50 p-2.5 rounded-xl border border-red-100">
+                                    <span class="text-[10px] font-black text-sw-red uppercase tracking-widest block mb-1">Perk Unlocked</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight">• Participation Certificate</span>
+                                </div>
+                                <div class="absolute -top-2 left-6 w-4 h-4 bg-white border-t border-l border-gray-100 transform rotate-45"></div>
+                            </div>
+                        </div>
+
+                        <div class="step-container group cursor-pointer">
+                            <div class="icon-circle relative z-10"><i class="fa-solid fa-users"></i></div>
+                            <p class="step-text">Community Creation</p>
+                            
+                            <div class="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-48 bg-white rounded-2xl p-4 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] scale-95 group-hover:scale-100 pointer-events-none text-left">
+                                <h5 class="text-xs font-black text-ds-blue uppercase mb-1">Community Creation</h5>
+                                <p class="text-[12px] text-gray-500 mb-3 leading-relaxed font-medium">Create and verify your team's 3DEXPERIENCE community workspace.</p>
+                                <div class="bg-red-50 p-2.5 rounded-xl border border-red-100">
+                                    <span class="text-[10px] font-black text-sw-red uppercase tracking-widest block mb-1">Perk Unlocked</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight">• Participation Certificate</span>
+                                </div>
+                                <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-gray-100 transform rotate-45"></div>
+                            </div>
+                        </div>
+
+                        <div class="step-container group cursor-pointer">
+                            <div class="icon-circle relative z-10"><i class="fa-solid fa-pencil"></i></div>
+                            <p class="step-text">Mentor Reg.</p>
+                            
+                            <div class="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-48 bg-white rounded-2xl p-4 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] scale-95 group-hover:scale-100 pointer-events-none text-left">
+                                <h5 class="text-xs font-black text-ds-blue uppercase mb-1">Mentor Registration</h5>
+                                <p class="text-[12px] text-gray-500 mb-3 leading-relaxed font-medium">Submit the official details of your faculty or industry guide.</p>
+                                <div class="bg-red-50 p-2.5 rounded-xl border border-red-100">
+                                    <span class="text-[10px] font-black text-sw-red uppercase tracking-widest block mb-1">Perk Unlocked</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight">• Participation Certificate</span>
+                                </div>
+                                <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-gray-100 transform rotate-45"></div>
+                            </div>
+                        </div>
+
+                        <div class="step-container group cursor-pointer">
+                            <div class="icon-circle relative z-10"><i class="fa-solid fa-camera"></i></div>
+                            <p class="step-text">Selfie</p>
+                            
+                            <div class="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-48 bg-white rounded-2xl p-4 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] scale-95 group-hover:scale-100 pointer-events-none text-left">
+                                <h5 class="text-xs font-black text-ds-blue uppercase mb-1">Selfie with Mentor</h5>
+                                <p class="text-[12px] text-gray-500 mb-3 leading-relaxed font-medium">Upload a team Selfie with your registered mentor.</p>
+                                <div class="bg-red-50 p-2.5 rounded-xl border border-red-100">
+                                    <span class="text-[10px] font-black text-sw-red uppercase tracking-widest block mb-1">Perk Unlocked</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight">• Participation Certificate</span>
+                                </div>
+                                <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-gray-100 transform rotate-45"></div>
+                            </div>
+                        </div>
+
+                        <div class="step-container group cursor-pointer">
+                            <div class="icon-circle relative z-10"><i class="fa-solid fa-compass-drafting"></i></div>
+                            <p class="step-text">IDC</p>
+                            
+                            <div class="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-48 bg-white rounded-2xl p-4 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] scale-95 group-hover:scale-100 pointer-events-none text-left">
+                                <h5 class="text-xs font-black text-ds-blue uppercase mb-1">Initial Design Challenge</h5>
+                                <p class="text-[12px] text-gray-500 mb-3 leading-relaxed font-medium">Submit your project synopsis, sketches, and early concepts.</p>
+                                <div class="bg-red-50 p-2.5 rounded-xl border border-red-100">
+                                    <span class="text-[10px] font-black text-sw-red uppercase tracking-widest block mb-1">Perks Unlocked</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight mb-1">• Phase 1 Qualification</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight">• Participation Certificate</span>
+                                </div>
+                                <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-gray-100 transform rotate-45"></div>
+                            </div>
+                        </div>
+
+                        <div class="step-container group cursor-pointer">
+                            <div class="icon-circle relative z-10"><i class="fa-solid fa-microchip"></i></div>
+                            <p class="step-text">FDC</p>
+                            
+                            <div class="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-48 bg-white rounded-2xl p-4 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] scale-95 group-hover:scale-100 pointer-events-none text-left">
+                                <h5 class="text-xs font-black text-ds-blue uppercase mb-1">Final Design Challenge</h5>
+                                <p class="text-[12px] text-gray-500 mb-3 leading-relaxed font-medium">Submit comprehensive engineering models, simulations, and final reports.</p>
+                                <div class="bg-red-50 p-2.5 rounded-xl border border-red-100">
+                                    <span class="text-[10px] font-black text-sw-red uppercase tracking-widest block mb-1">Perks Unlocked</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight mb-1">• Participation Certificate</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight">• SOLIDWORKS Vouchers</span>
+                                </div>
+                                <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-gray-100 transform rotate-45"></div>
+                            </div>
+                        </div>
+
+                        <div class="step-container group cursor-pointer">
+                            <div class="icon-circle relative z-10"><i class="fa-solid fa-trophy"></i></div>
+                            <p class="step-text">Regional</p>
+                            
+                            <div class="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-48 bg-white rounded-2xl p-4 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] scale-95 group-hover:scale-100 pointer-events-none text-left">
+                                <h5 class="text-xs font-black text-ds-blue uppercase mb-1">Regional Finale</h5>
+                                <p class="text-[12px] text-gray-500 mb-3 leading-relaxed font-medium">Pitch your final design to the regional jury panel to qualify for GEO finale.</p>
+                                <div class="bg-red-50 p-2.5 rounded-xl border border-red-100">
+                                    <span class="text-[10px] font-black text-sw-red uppercase tracking-widest block mb-1">Perks Unlocked</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight mb-1">• Regional Finalist Cert.</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight mb-1">• Official Merchandise</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight">• Job & Internship Opp.</span>
+                                </div>
+                                <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-gray-100 transform rotate-45"></div>
+                            </div>
+                        </div>
+
+                        <div class="step-container group cursor-pointer">
+                            <div class="icon-circle relative z-10"><i class="fa-solid fa-trophy"></i></div>
+                            <p class="step-text">Geo Finale</p>
+                            
+                            <div class="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-48 bg-white rounded-2xl p-4 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] scale-95 group-hover:scale-100 pointer-events-none text-left">
+                                <h5 class="text-xs font-black text-ds-blue uppercase mb-1">GEO Finale</h5>
+                                <p class="text-[12px] text-gray-500 mb-3 leading-relaxed font-medium">Compete against the top winning teams from across your GEO countries.</p>
+                                <div class="bg-red-50 p-2.5 rounded-xl border border-red-100">
+                                    <span class="text-[10px] font-black text-sw-red uppercase tracking-widest block mb-1">Perks Unlocked</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight mb-1">• GEO Finalist Cert.</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight mb-1">• Official Merchandise</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight">• Job & Internship Opp.</span>
+                                </div>
+                                <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-gray-100 transform rotate-45"></div>
+                            </div>
+                        </div>
+
+                        <div class="step-container group cursor-pointer">
+                            <div class="icon-circle relative z-10"><i class="fa-solid fa-trophy"></i></div>
+                            <p class="step-text">Intl Finale</p>
+                            
+                            <div class="absolute top-[calc(100%+10px)] right-0 w-48 bg-white rounded-2xl p-4 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] scale-95 group-hover:scale-100 pointer-events-none text-left">
+                                <h5 class="text-xs font-black text-ds-blue uppercase mb-1">International Finale</h5>
+                                <p class="text-[12px] text-gray-500 mb-3 leading-relaxed font-medium">The ultimate showdown where you present your design to global executives.</p>
+                                <div class="bg-red-50 p-2.5 rounded-xl border border-red-100">
+                                    <span class="text-[10px] font-black text-sw-red uppercase tracking-widest block mb-1">Perks Unlocked</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight mb-1">• Intl Finalist Cert.</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight mb-1">• Official Merchandise</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight mb-1">• Cash Prize</span>
+                                    <span class="text-[11px] text-gray-900 font-bold block leading-tight">• Job & Internship Opp.</span>
+                                </div>
+                                <div class="absolute -top-2 right-6 w-4 h-4 bg-white border-t border-l border-gray-100 transform rotate-45"></div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <p class="text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">University / College</p>
+                        <p id="homeCollege" class="font-bold text-ds-blue text-lg uppercase leading-tight">---</p>
+                        <p id="homeCountry" class="text-xs text-sw-red font-bold mt-1 uppercase tracking-widest">---</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex justify-between items-start">
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Team Leader</p>
+                            <p id="homeLeader" class="font-bold text-ds-blue text-lg leading-tight truncate">---</p>
+                            <p id="homeLeaderEmail" class="text-xs text-gray-500 italic mt-1 font-medium truncate">---</p>
+                        </div>
+                        <div class="bg-red-50 p-3 rounded-xl flex-shrink-0"><i class="fa-solid fa-crown text-sw-red text-xl"></i></div>
+                    </div>
+                </div>
+
+                <div class="mt-8 bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
+                    <div class="flex items-center mb-6">
+                        <div class="h-12 w-12 rounded-2xl bg-red-50 text-sw-red flex items-center justify-center text-xl mr-4 shadow-sm">
+                            <i class="fa-solid fa-bullhorn"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black text-ds-blue uppercase italic leading-tight">Important Announcements</h3>
+                            <p class="text-xs text-gray-400 font-medium">Stay updated with the latest competition news.</p>
+                        </div>
+                    </div>
+                    
+                    <div id="announcementsContainer" class="max-h-[250px] overflow-y-auto pr-2 space-y-3 custom-scrollbar">
+                        </div>
+                </div>
+
+            </section>
+
+            <section id="team" class="section-content">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-black text-ds-blue uppercase italic">Project Squad</h2>
+                    <p class="text-gray-400 text-sm">Review theme selection and member directory.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="teamGrid"></div>
+            </section>
+
+            <section id="tasks" class="section-content">
+                <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-ds-blue uppercase italic">Milestone Tasks</h2>
+                        <p class="text-gray-400 text-sm">Track progress for each competition phase.</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="tasksGrid"></div>
+            </section>
+
+            <section id="wiki" class="section-content">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-black text-ds-blue uppercase italic">Wiki & Resources</h2>
+                    <p class="text-gray-400 text-sm">Access rulebooks, tutorials, and competition guidelines.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    
+                    <a href="https://r1132100503382-eu1-3dswym.3dexperience.3ds.com/community/swym:prd:R1132100503382:community:AH6Out1lTB2kjqDkm0S-Qg?content=swym:prd:R1132100503382:wikitree:_uGc9BusReWBD_r9M7_-gA" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
+                        <div class="h-16 w-16 rounded-2xl bg-red-50 text-sw-red group-hover:bg-sw-red group-hover:text-white transition-colors flex items-center justify-center text-2xl mb-4 shadow-sm">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <h4 class="font-black text-ds-blue text-md leading-tight mb-2 uppercase">WHAT IS AIC 2026</h4>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Introduction to AAKRUTI Innovation Competition</p>
+                    </a>
+                    
+                    <a href="https://r1132100503382-eu1-3dswym.3dexperience.3ds.com/community/swym:prd:R1132100503382:community:AH6Out1lTB2kjqDkm0S-Qg?content=swym:prd:R1132100503382:wikitree:G-sCyK6mSwSnutkjUfw3EQ" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
+                        <div class="h-16 w-16 rounded-2xl bg-red-50 text-sw-red group-hover:bg-sw-red group-hover:text-white transition-colors flex items-center justify-center text-2xl mb-4 shadow-sm">
+                            <i class="fa-solid fa-lightbulb"></i>
+                        </div>
+                        <h4 class="font-black text-ds-blue text-md leading-tight mb-2 uppercase">THEMES</h4>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">AAKRUTI 2026 Themes</p>
+                    </a>
+
+                    <a href="https://r1132100503382-eu1-3dswym.3dexperience.3ds.com/community/swym:prd:R1132100503382:community:AH6Out1lTB2kjqDkm0S-Qg?content=swym:prd:R1132100503382:wikitree:ScdfjHuiRK2n8gPfoYtEPA" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
+                        <div class="h-16 w-16 rounded-2xl bg-red-50 text-sw-red group-hover:bg-sw-red group-hover:text-white transition-colors flex items-center justify-center text-2xl mb-4 shadow-sm">
+                            <i class="fa-solid fa-sticky-note"></i>
+                        </div>
+                        <h4 class="font-black text-ds-blue text-md leading-tight mb-2 uppercase">GUIDELINES</h4>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">AAKRUTI 2026 Guidelines</p>
+                    </a>
+
+                    <a href="https://r1132100503382-eu1-3dswym.3dexperience.3ds.com/community/swym:prd:R1132100503382:community:AH6Out1lTB2kjqDkm0S-Qg?content=swym:prd:R1132100503382:wikitree:LxcwWAyTRn-bWoXcUl7GzA" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
+                        <div class="h-16 w-16 rounded-2xl bg-red-50 text-sw-red group-hover:bg-sw-red group-hover:text-white transition-colors flex items-center justify-center text-2xl mb-4 shadow-sm">
+                            <i class="fa-solid fa-book"></i>
+                        </div>
+                        <h4 class="font-black text-ds-blue text-md leading-tight mb-2 uppercase">OFFICIAL RULEBOOK</h4>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Rules of the Competition</p>
+                    </a>
+
+                    <a href="https://r1132100503382-eu1-3dswym.3dexperience.3ds.com/community/swym:prd:R1132100503382:community:AH6Out1lTB2kjqDkm0S-Qg?content=swym:prd:R1132100503382:wikitree:OY6JYEQMTW6rSNyL4PbJbA" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
+                        <div class="h-16 w-16 rounded-2xl bg-red-50 text-sw-red group-hover:bg-sw-red group-hover:text-white transition-colors flex items-center justify-center text-2xl mb-4 shadow-sm">
+                            <i class="fa-solid fa-user-secret"></i>
+                        </div>
+                        <h4 class="font-black text-ds-blue text-md leading-tight mb-2 uppercase">MENTOR'S ROLE</h4>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Team Mentor's Responsibilities</p>
+                    </a>
+
+                    <a href="https://r1132100503382-eu1-3dswym.3dexperience.3ds.com/community/swym:prd:R1132100503382:community:AH6Out1lTB2kjqDkm0S-Qg?content=swym:prd:R1132100503382:wikitree:VFBZaDmKRFiefyaeJPzYkw" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
+                        <div class="h-16 w-16 rounded-2xl bg-red-50 text-sw-red group-hover:bg-sw-red group-hover:text-white transition-colors flex items-center justify-center text-2xl mb-4 shadow-sm">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </div>
+                        <h4 class="font-black text-ds-blue text-md leading-tight mb-2 uppercase">PROBLEM STATEMENTS</h4>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Reference Problem Statements</p>
+                    </a>
+
+                    <a href="https://r1132100503382-eu1-3dswym.3dexperience.3ds.com/community/swym:prd:R1132100503382:community:AH6Out1lTB2kjqDkm0S-Qg?content=swym:prd:R1132100503382:wikitree:Oh4JLQBBQe6xsKKSpHbfRQ" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
+                        <div class="h-16 w-16 rounded-2xl bg-red-50 text-sw-red group-hover:bg-sw-red group-hover:text-white transition-colors flex items-center justify-center text-2xl mb-4 shadow-sm">
+                            <i class="fa-solid fa-circle-question"></i>
+                        </div>
+                        <h4 class="font-black text-ds-blue text-md leading-tight mb-2 uppercase">FAQs</h4>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Common Queries</p>
+                    </a>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="themeModal" class="fixed inset-0 z-50 flex items-center justify-center hidden modal-overlay">
+        <div class="bg-white rounded-[2.5rem] p-10 w-full max-w-2xl shadow-2xl mx-4 border border-gray-100">
+            <h3 class="text-2xl font-black text-ds-blue uppercase italic mb-8">Update Theme</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div onclick="selectThemeTile(this, 'Robotics')" class="theme-tile group p-5 rounded-3xl border-2 border-gray-100 bg-gray-50 cursor-pointer transition-all">
+                    <div class="tile-icon h-12 w-12 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-4 transition-colors"><i class="fa-solid fa-robot text-xl"></i></div>
+                    <h4 class="font-black text-ds-blue text-sm leading-tight">Robotics</h4>
+                </div>
+                <div onclick="selectThemeTile(this, 'Local Community Problems')" class="theme-tile group p-5 rounded-3xl border-2 border-gray-100 bg-gray-50 cursor-pointer transition-all">
+                    <div class="tile-icon h-12 w-12 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-4 transition-colors"><i class="fa-solid fa-users text-xl"></i></div>
+                    <h4 class="font-black text-ds-blue text-sm leading-tight">Local Community Problems</h4>
+                </div>
+                <div onclick="selectThemeTile(this, 'Healthcare Innovation')" class="theme-tile group p-5 rounded-3xl border-2 border-gray-100 bg-gray-50 cursor-pointer transition-all">
+                    <div class="tile-icon h-12 w-12 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-4 transition-colors"><i class="fa-solid fa-heart-pulse text-xl"></i></div>
+                    <h4 class="font-black text-ds-blue text-sm leading-tight">Healthcare Innovation</h4>
+                </div>
+                <div onclick="selectThemeTile(this, 'Mobility')" class="theme-tile group p-5 rounded-3xl border-2 border-gray-100 bg-gray-50 cursor-pointer transition-all">
+                    <div class="tile-icon h-12 w-12 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-4 transition-colors"><i class="fa-solid fa-car text-xl"></i></div>
+                    <h4 class="font-black text-ds-blue text-sm leading-tight">Mobility</h4>
+                </div>
+            </div>
+            <div class="flex gap-4 mt-10">
+                <button onclick="closeModal('themeModal')" class="flex-1 p-4 rounded-2xl font-bold text-gray-400 bg-gray-50 uppercase text-xs">Cancel</button>
+                <button onclick="confirmThemeSelection()" id="confirmThemeBtn" class="flex-1 p-4 rounded-2xl font-black text-white bg-indigo-600 shadow-lg opacity-50 cursor-not-allowed transition-all uppercase text-xs" disabled>Confirm Theme</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="submitTaskModal" class="fixed inset-0 z-[60] flex items-center justify-center hidden modal-overlay">
+        <div class="bg-white rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl mx-4 border border-gray-100">
+            <h3 class="text-xl font-black text-ds-blue uppercase italic mb-4">Submit Link</h3>
+            <p class="text-xs text-gray-400 mb-6 font-medium">Paste the community URL created for the AAKRUTI challenge.</p>
+            <input type="url" id="communityUrl" placeholder="https://community-link.com" 
+                   class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 font-bold outline-none focus:ring-4 focus:ring-red-500/10 focus:border-sw-red text-sm mb-8">
+            <div class="flex gap-3">
+                <button onclick="closeModal('submitTaskModal')" class="flex-1 p-4 rounded-2xl font-bold text-gray-400 bg-gray-50 uppercase text-[10px]">Cancel</button>
+                <button onclick="initiateTaskSubmission()" class="flex-1 p-4 rounded-2xl font-black text-white bg-sw-red shadow-lg uppercase text-[10px]">Verify & Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="mentorModal" class="fixed inset-0 z-[60] flex items-center justify-center hidden modal-overlay">
+        <div class="bg-white rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl mx-4 border border-gray-100">
+            <h3 id="mentorModalTitle" class="text-xl font-black text-ds-blue uppercase italic mb-4">Mentor Registration</h3>
+            <div class="space-y-3 mb-8">
+                <input type="text" id="mentorFirstName" placeholder="Mentor First Name" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold outline-none focus:border-sw-red text-sm">
+                <input type="text" id="mentorLastName" placeholder="Mentor Last Name" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold outline-none focus:border-sw-red text-sm">
+                <input type="email" id="mentorEmail" placeholder="Mentor E-Mail ID" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold outline-none focus:border-sw-red text-sm">
+                <input type="text" id="mentorOrg" placeholder="Mentor Organization" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold outline-none focus:border-sw-red text-sm">
+                <input type="text" id="mentorCountry" list="countryList" placeholder="Search or select country..." autocomplete="off" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold outline-none focus:border-sw-red text-sm text-gray-700 cursor-text">
+				<datalist id="countryList"></datalist>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeModal('mentorModal')" class="flex-1 p-4 rounded-2xl font-bold text-gray-400 bg-gray-50 uppercase text-[10px]">Cancel</button>
+                <button onclick="initiateMentorSubmission()" class="flex-1 p-4 rounded-2xl font-black text-white bg-sw-red shadow-lg uppercase text-[10px]">Submit Details</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="fixed inset-0 z-50 flex items-center justify-center hidden modal-overlay">
+        <div class="bg-white rounded-[2rem] p-8 w-full max-w-md shadow-2xl mx-4">
+            <h3 class="text-xl font-black text-ds-blue mb-6 uppercase italic">Update Member</h3>
+            <div class="space-y-4">
+                <div class="flex gap-3">
+                    <input type="text" id="editFirstName" placeholder="First Name" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold outline-none focus:ring-2 focus:ring-red-500">
+                    <input type="text" id="editLastName" placeholder="Last Name" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+                <input type="email" id="editEmail" readonly class="w-full bg-gray-100 border border-gray-200 rounded-xl p-3 font-bold text-gray-400 cursor-not-allowed outline-none">
+            </div>
+            <div class="flex gap-3 mt-8">
+                <button onclick="closeModal('editModal')" class="flex-1 p-3 rounded-xl font-bold text-gray-500 bg-gray-100">Cancel</button>
+                <button onclick="saveMemberDetails()" class="flex-1 p-3 rounded-xl font-bold text-white bg-sw-red shadow-lg">Save</button>
+            </div>
+        </div>
+    </div>
+
+	<div id="confirmActionModal" class="fixed inset-0 z-[70] flex items-center justify-center hidden modal-overlay">
+        <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-sm shadow-2xl mx-4 border border-gray-100 text-center">
+            <img src="https://github.com/surajgajbhiye15/index/blob/main/Aakruti%20Logo.png?raw=true" alt="AAKRUTI Logo" class="h-8 mx-auto mb-6">
+            <h3 class="text-xl font-black text-ds-blue uppercase italic mb-2">Confirm Submission</h3>
+            <p class="text-sm text-gray-500 mb-8 font-medium">Are you sure you want to submit these details? You cannot undo this action.</p>
+            <div class="flex gap-3">
+                <button onclick="handleConfirm(false)" class="flex-1 p-4 rounded-2xl font-bold text-gray-400 bg-gray-50 uppercase text-[10px] hover:bg-gray-100 transition-colors">No, Cancel</button>
+                <button onclick="handleConfirm(true)" class="flex-1 p-4 rounded-2xl font-black text-white bg-sw-red shadow-lg uppercase text-[10px] hover:bg-red-700 transition-colors">Yes, Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="successModal" class="fixed inset-0 z-[80] flex items-center justify-center hidden modal-overlay">
+        <div id="successModalContent" class="bg-white rounded-[2.5rem] p-8 w-full max-w-sm shadow-2xl mx-4 border border-gray-100 text-center transform transition-all duration-300 scale-95 opacity-0">
+            <img src="https://github.com/surajgajbhiye15/index/blob/main/Aakruti%20Logo.png?raw=true" alt="AAKRUTI Logo" class="h-8 mx-auto mb-6">
+            <div class="w-16 h-16 bg-green-50 text-green-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-sm border border-green-100">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h3 class="text-lg font-black text-ds-blue uppercase italic">Submitted Successfully!</h3>
+        </div>
+    </div>
+	
+	<div id="loadingOverlay" class="fixed inset-0 z-[90] flex flex-col items-center justify-center hidden modal-overlay">
+        <i class="fa-solid fa-circle-notch fa-spin text-5xl text-sw-red mb-4"></i>
+        <h3 class="text-white font-black uppercase tracking-widest text-sm bg-gray-900/50 px-4 py-2 rounded-full backdrop-blur-md">Processing Submission...</h3>
+    </div>
+	
+	<div id="logoutConfirmModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden modal-overlay">
+        <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-sm shadow-2xl mx-4 border border-gray-100 text-center">
+            
+            <img src="https://github.com/surajgajbhiye15/index/blob/main/Aakruti%20Logo.png?raw=true" alt="AAKRUTI Logo" class="h-8 mx-auto mb-6">
+            
+            <div class="w-16 h-16 bg-red-50 text-sw-red rounded-full flex items-center justify-center text-3xl mx-auto mb-6 shadow-sm border border-red-100">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </div>
+            
+            <h3 class="text-xl font-black text-ds-blue uppercase italic mb-2">Ready to Leave?</h3>
+            <p class="text-sm text-gray-500 mb-8 font-medium">Are you sure you want to log out of your dashboard?</p>
+            
+            <div class="flex gap-3">
+                <button onclick="closeModal('logoutConfirmModal')" class="flex-1 p-4 rounded-2xl font-bold text-gray-400 bg-gray-50 uppercase text-[10px] hover:bg-gray-100 transition-colors">Cancel</button>
+                <button onclick="executeLogout()" class="flex-1 p-4 rounded-2xl font-black text-white bg-sw-red shadow-lg uppercase text-[10px] hover:bg-red-700 transition-colors">Yes, Logout</button>
+            </div>
+        </div>
+    </div>
+	
+	<div id="swKeyModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden modal-overlay">
+        <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-sm shadow-2xl mx-4 border border-gray-100 text-center">
+            
+            <img src="https://github.com/surajgajbhiye15/index/blob/main/Aakruti%20Logo.png?raw=true" alt="AAKRUTI Logo" class="h-8 mx-auto mb-6">
+            
+            <div class="w-16 h-16 bg-blue-50 text-ds-blue rounded-full flex items-center justify-center text-3xl mx-auto mb-6 shadow-sm border border-blue-100">
+                <i class="fa-solid fa-key"></i>
+            </div>
+            
+            <h3 class="text-xl font-black text-ds-blue uppercase italic mb-2">Your License Key</h3>
+            <p class="text-sm text-gray-500 mb-6 font-medium">Use this exclusive key to activate your SOLIDWORKS 2026 student edition.</p>
+            
+            <div class="flex items-center gap-2 mb-8 bg-gray-50 p-2 rounded-2xl border border-gray-200">
+                <input type="text" id="swLicenseKeyInput" value="9020 0000 0000 0000 ABC1 DEF2" readonly class="w-full bg-transparent font-black text-gray-700 text-center outline-none tracking-widest text-sm">
+                <button onclick="copySWKey()" id="copyKeyBtn" class="bg-ds-blue text-white px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md hover:bg-blue-800 transition-colors shrink-0">Copy</button>
+            </div>
+
+            <button onclick="closeModal('swKeyModal')" class="w-full p-4 rounded-2xl font-bold text-gray-400 bg-gray-50 uppercase text-[10px] hover:bg-gray-100 transition-colors">Close</button>
+        </div>
+    </div>
+	
+	<div id="customAlertModal" class="fixed inset-0 z-[120] flex items-center justify-center hidden modal-overlay">
+        <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-sm shadow-2xl mx-4 border border-gray-100 text-center">
+            <img src="https://github.com/surajgajbhiye15/index/blob/main/Aakruti%20Logo.png?raw=true" alt="AAKRUTI Logo" class="h-8 mx-auto mb-6">
+            <div class="w-16 h-16 bg-red-50 text-sw-red rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-sm border border-red-100">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 id="customAlertTitle" class="text-xl font-black text-ds-blue uppercase italic mb-2">Notice</h3>
+            <p id="customAlertMessage" class="text-sm text-gray-500 mb-8 font-medium leading-relaxed">Message goes here.</p>
+            <button onclick="closeModal('customAlertModal')" class="w-full p-4 rounded-2xl font-black text-white bg-ds-blue shadow-lg uppercase text-[10px] hover:bg-blue-800 transition-colors">Understood</button>
+        </div>
+    </div>
+	
+	<div id="resultModal" class="fixed inset-0 z-[130] flex items-center justify-center hidden modal-overlay p-4">
+        <div class="bg-white rounded-[2rem] p-3 w-full max-w-4xl shadow-2xl relative overflow-hidden flex flex-col max-h-[95vh]">
+            
+            <div class="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 print-hide"></div>
+            <div class="absolute bottom-0 left-0 w-64 h-64 bg-red-50 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 print-hide"></div>
+
+            <div class="border-[3px] border-ds-blue/10 rounded-[1.5rem] p-6 md:p-10 relative flex-1 overflow-y-auto custom-scrollbar bg-white/90 backdrop-blur-sm">
+                
+                <div class="text-center mb-8 border-b-2 border-gray-100 pb-6">
+                    <img src="https://github.com/surajgajbhiye15/index/blob/main/Aakruti%20Logo.png?raw=true" alt="AAKRUTI Logo" class="h-12 mx-auto mb-4">
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-2">Official Evaluation Report</p>
+                    <h2 id="resultPhaseTitle" class="text-3xl md:text-4xl font-black text-ds-blue uppercase italic tracking-tight">Initial Design Challenge</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
+                    
+                    <div class="md:col-span-7 flex flex-col gap-5">
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div class="sm:col-span-2">
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Team Details</p>
+                                <h3 class="text-xl font-black text-gray-800 uppercase break-words leading-tight" id="resultTeamName">[Team Name]</h3>
+                                <p class="text-xs font-bold text-gray-500 mt-1 uppercase tracking-widest" id="resultTeamID">ID: ---</p>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Selected Theme</p>
+                                <p class="text-sm font-bold text-ds-blue italic truncate" id="resultTheme">[Theme Selected]</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                            <div class="min-w-0">
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">University / College</p>
+                                <p class="text-sm font-bold text-gray-700 truncate" id="resultCollege">[University Name]</p>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Country</p>
+                                <p class="text-sm font-bold text-sw-red uppercase tracking-widest" id="resultCountry">[Country]</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2 border-t border-gray-100">
+                            <div class="flex flex-col gap-4">
+                                <div>
+                                    <p class="text-[10px] font-black text-sw-red uppercase tracking-widest mb-2"><i class="fa-solid fa-crown mr-1"></i> Team Leader</p>
+                                    <p class="text-sm font-bold text-gray-700" id="resultLeader">[Leader Name]</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-2"><i class="fa-solid fa-user-tie mr-1"></i> Project Mentor</p>
+                                    <p class="text-sm font-bold text-gray-700 break-words" id="resultMentorName">[Mentor Name]</p>
+                                    <p class="text-xs font-medium text-gray-500 mt-1 break-words" id="resultMentorDetails">[Org & Country]</p>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Members</p>
+                                <ul class="text-sm font-bold text-gray-600 space-y-1.5" id="resultMembers">
+                                    <li>[Member 1]</li>
+                                    <li>[Member 2]</li>
+                                    <li>[Member 3]</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-5 flex flex-col gap-6">
+                        <div class="bg-gray-50 rounded-3xl p-8 border-2 border-gray-200 text-center relative overflow-hidden flex flex-col items-center justify-center shrink-0">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-ds-blue to-sw-red print-hide"></div>
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Overall Grade</p>
+                            <div class="text-7xl font-black text-ds-blue tracking-tighter" id="resultGrade">A+</div>
+                        </div>
+
+                        <div class="flex-1 bg-blue-50/50 rounded-3xl p-6 border border-blue-100 flex flex-col">
+                            <p class="text-[10px] font-black text-ds-blue uppercase tracking-widest mb-3 flex items-center gap-2 shrink-0">
+                                <i class="fa-solid fa-quote-left"></i> Evaluator Remarks
+                            </p>
+                            <div class="flex-1 overflow-y-auto custom-scrollbar pr-2">
+                                <p class="text-sm text-gray-700 font-medium leading-relaxed italic text-justify" id="resultComments">
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="pt-4 flex justify-end gap-3 px-6 pb-2 print-hide">
+                <button onclick="printCertificate()" class="px-6 py-3 rounded-xl font-bold text-gray-500 bg-gray-100 hover:bg-gray-200 transition-colors uppercase text-[10px] tracking-widest"><i class="fa-solid fa-print mr-2"></i> Print Report</button>
+                <button onclick="closeModal('resultModal')" class="px-8 py-3 rounded-xl font-black text-white bg-ds-blue shadow-lg hover:bg-blue-800 transition-colors uppercase text-[10px] tracking-widest">Close</button>
+            </div>
+        </div>
+    </div>
+	
+    <script>
+        let currentRole = '';
+        let selectedThemeTemp = "";
+
+        // NEW: Google Apps Script Web App URL
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzxfz1v6SeVQrRfe2Doq7BNWOG9XQxQUSFS-QJprIgP2vMD6auGmuUZI7cw5u45SQIs/exec";
+		
+		let currentTaskSubmission = ""; // Tracks which task is being submitted
+        
+        const IDC_EVAL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgXzBv4huKh8N_jZ0Zy8oAXGVSr_FxW7MhxAGFBq-YqOc3ec9EflDhhl2dBA48WlI0/exec";
+		const FDC_EVAL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzEA56gEBUBzj9GUqO4PF6umpiuiDNr--Ez1hVgTcGKoF83-I5eggw3vbFYYKqyrlXs/exec";
+		
+		// ==========================================
+        // MASTER TIMELINE CONTROLLER
+        // Format: 'YYYY-MM-DDTHH:MM:SS' (24-hour time)
+        // ==========================================
+        const COMPETITION_DATES = {
+            idcStart: new Date('2026-04-10T00:00:00'),
+            idcEnd: new Date('2026-04-25T23:59:59'),
+            
+            fdcStart: new Date('2026-07-01T00:00:00'),
+            fdcEnd: new Date('2026-07-30T23:59:59'),
+            
+            swKeyAvailable: new Date('2026-06-01T00:00:00') // Unlocks June 1st
+        };
+
+        // --- CUSTOM ALERT FUNCTION ---
+        function showCustomAlert(message, title = "Notice") {
+            document.getElementById('customAlertTitle').innerText = title;
+            document.getElementById('customAlertMessage').innerText = message;
+            document.getElementById('customAlertModal').classList.remove('hidden');
+        }
+		
+		// ==========================================
+        // EVALUATION DATABASE CONFIGURATION
+        // ==========================================
+        const IDC_RESULTS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR6hwpuHltAIpkh2QnXu_KxHd6MMxyH5kXWBWrCl-Vy7LO4mP_l1Tdxs0Y_XUxh_5Vi5NSB9uYQV7C9/pub?output=csv";
+		const FDC_RESULTS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQwVaYbln83tOGPhAHRd3zkrrYXyLQlo8WhDuV63coIIG_WKXHBvaLz-bW3c1Xt8DoRO6Z0EOax5lX4/pub?output=csv";
+
+        // Safely reads Google Sheets data, protecting commas inside sentences
+        function parseCSV(str) {
+            const arr = [];
+            let quote = false;
+            let row = 0, col = 0;
+            for (let c = 0; c < str.length; c++) {
+                let cc = str[c], nc = str[c+1];
+                arr[row] = arr[row] || [];
+                arr[row][col] = arr[row][col] || '';
+                if (cc == '"' && quote && nc == '"') { arr[row][col] += cc; ++c; continue; }
+                if (cc == '"') { quote = !quote; continue; }
+                if (cc == ',' && !quote) { ++col; continue; }
+                if (cc == '\r' && nc == '\n' && !quote) { ++row; col = 0; ++c; continue; }
+                if (cc == '\n' && !quote) { ++row; col = 0; continue; }
+                if (cc == '\r' && !quote) { ++row; col = 0; continue; }
+                arr[row][col] += cc;
+            }
+            return arr;
+        }
+		
+        // NEW: Helper function to push updates to Google Sheet
+        async function updateDataInSheet(updateParams) {
+            const profile = JSON.parse(localStorage.getItem('teamProfile'));
+            if (!profile || !profile.teamID) return;
+
+            // Set the required parameters for your Apps Script
+            updateParams.action = 'update';
+            updateParams.teamID = profile.teamID;
+
+            // Convert the data into URL parameters so e.parameter can read it
+            const formBody = new URLSearchParams(updateParams);
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formBody.toString()
+                });
+                
+                const result = await response.json();
+                console.log("Google Sheet Update:", result);
+            } catch (error) {
+                console.error("Failed to update Google Sheet:", error);
+            }
+        }
+
+        // DATA ARRAYS
+        const milestoneData = [
+            { id: 1, title: 'Community Creation', icon: 'fa-users', desc: 'Build your community and submit the community link for verification.', link: 'https://r1132101069156-indw2-academia-3dswym.3dexperience.3ds.com/home' },
+            { id: 2, title: 'Mentor Registration', icon: 'fa-chalkboard-user', desc: 'Register your official mentor to guide your project.', link: '#' },
+            { id: 3, title: 'Selfie with Mentor', icon: 'fa-camera-retro', desc: 'Post team Selfie with mentor & submit the post link.', link: 'https://r1132101069156-indw2-academia-3dswym.3dexperience.3ds.com/home' },
+            { id: 4, title: 'Initial Design Challenge', icon: 'fa-compass-drafting', desc: 'Create "Synopsys (Initial Design Concept)" post as per the guidelines and submit the post link.', link: 'https://r1132101069156-indw2-academia-3dswym.3dexperience.3ds.com/home' },
+            { id: 5, title: 'Final Design Challenge', icon: 'fa-microchip', desc: 'Create "Final Design Challenge" post as per the guidelines and submit the post link.', link: 'https://r1132101069156-indw2-academia-3dswym.3dexperience.3ds.com/home' }
+        ];
+
+        const announcementsData = [
+            { 
+                title: "Phase 1 Submissions Extended!", 
+                date: "Mar 21", 
+                desc: "The deadline for submitting your Initial Design Concept (IDC) has been extended by 48 hours.", 
+                link: "https://www.google.com/?zx=1774095655499&no_sw_cr=1" 
+            },
+            { 
+                title: "Live Mentorship Q&A Session", 
+                date: "Mar 18", 
+                desc: "Join us this Friday for a live Q&A session with industry experts from Dassault Systèmes.", 
+                link: "#" 
+            },
+            { 
+                title: "SOLIDWORKS 2026 License Keys", 
+                date: "Mar 15", 
+                desc: "Check your registered email inbox for your exclusive student license keys required for AAKRUTI participation.", 
+                link: "#" 
+            },
+            { 
+                title: "Welcome to AAKRUTI 2026!", 
+                date: "Mar 10", 
+                desc: "The portal is now live. Complete your team profile and select your project theme to unlock the roadmap.", 
+                link: "#" 
+            }
+        ];
+
+        // NAVIGATION LOGIC
+        function showSection(id, btn) {
+            document.querySelectorAll('.section-content').forEach(s => s.classList.remove('section-active'));
+            document.getElementById(id).classList.add('section-active');
+            document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            let titleText = "Home Page";
+            if (id === 'team') titleText = "Team Details";
+            else if (id === 'tasks') titleText = "Assigned Tasks";
+            else if (id === 'wiki') titleText = "Wiki & Resources";
+            
+            document.getElementById('sectionTitle').innerText = titleText;
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        // THEME LOGIC
+        function openThemeModal(currentTheme) {
+            selectedThemeTemp = currentTheme;
+            document.getElementById('themeModal').classList.remove('hidden');
+            document.querySelectorAll('.theme-tile').forEach(tile => {
+                tile.classList.remove('selected');
+                if (tile.innerText.includes(currentTheme)) { tile.classList.add('selected'); toggleThemeBtn(true); }
+            });
+        }
+
+        function selectThemeTile(element, value) {
+            document.querySelectorAll('.theme-tile').forEach(t => t.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedThemeTemp = value;
+            toggleThemeBtn(true);
+        }
+
+        function toggleThemeBtn(active) {
+            const btn = document.getElementById('confirmThemeBtn');
+            btn.disabled = !active;
+            btn.classList.toggle('opacity-50', !active);
+            btn.classList.toggle('cursor-not-allowed', !active);
+        }
+
+        // MODIFIED: Added push to Google Sheets
+        function confirmThemeSelection() {
+            const profile = JSON.parse(localStorage.getItem('teamProfile'));
+            profile.theme = selectedThemeTemp;
+            localStorage.setItem('teamProfile', JSON.stringify(profile));
+            updateHomeDisplay(profile);
+            renderTeamGrid();
+            closeModal('themeModal');
+
+            // Push theme to Google Sheet
+            updateDataInSheet({ theme: selectedThemeTemp });
+        }
+
+        // MEMBER LOGIC
+        function openEditModal(role, fullName, email) {
+            currentRole = role;
+            
+            // Safely split the full name into First and Last
+            let fName = "";
+            let lName = "";
+            if (fullName && fullName !== '---') {
+                const parts = fullName.split(' ');
+                fName = parts[0] || "";
+                lName = parts.slice(1).join(' ') || ""; // Catches multi-word last names
+            }
+
+            document.getElementById('editFirstName').value = fName;
+            document.getElementById('editLastName').value = lName;
+            document.getElementById('editEmail').value = email;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function saveMemberDetails() {
+            const profile = JSON.parse(localStorage.getItem('teamProfile'));
+            const fName = document.getElementById('editFirstName').value.trim();
+            const lName = document.getElementById('editLastName').value.trim();
+            
+            // Recombine for the local UI
+            const fullName = fName + (lName ? " " + lName : "");
+            
+            const payload = {};
+            
+            if(currentRole === 'leader') { 
+                profile.leaderName = fullName; 
+                payload.leaderFirstName = fName;
+                payload.leaderLastName = lName;
+            } else { 
+                profile[currentRole + 'Name'] = fullName; 
+                payload[currentRole + 'FirstName'] = fName; 
+                payload[currentRole + 'LastName'] = lName; 
+            }
+            
+            localStorage.setItem('teamProfile', JSON.stringify(profile));
+            updateHomeDisplay(profile);
+            renderTeamGrid();
+            closeModal('editModal');
+
+            // Push separate First and Last names to Google Sheet
+            updateDataInSheet(payload);
+        }
+
+        // UI RENDERING
+        function renderTeamGrid() {
+            const p = JSON.parse(localStorage.getItem('teamProfile'));
+            const grid = document.getElementById('teamGrid');
+            
+            let html = `<div class="bg-indigo-50 p-6 rounded-[2rem] border border-indigo-100 shadow-sm flex items-center justify-between col-span-1 lg:col-span-2">
+                <div class="flex items-center gap-5 min-w-0">
+                    <div class="w-14 h-14 bg-indigo-600 text-white rounded-2xl flex-shrink-0 flex items-center justify-center text-xl shadow-lg">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Selected Theme</p>
+                        <p class="font-black text-indigo-900 text-lg leading-tight truncate italic">${p.theme || 'Not Assigned'}</p>
+                    </div>
+                </div>
+                <button onclick="openThemeModal('${p.theme}')" class="h-10 w-10 rounded-xl bg-white text-indigo-300 hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center border border-indigo-100 shadow-sm">
+                    <i class="fa-solid fa-list-check"></i>
+                </button>
+            </div>`;
+
+            if (p.mentor) {
+                html += `<div class="bg-amber-50 p-6 rounded-[2rem] border border-amber-100 shadow-sm flex items-center justify-between col-span-1 lg:col-span-2">
+                    <div class="flex items-center gap-5 min-w-0">
+                        <div class="w-14 h-14 bg-amber-500 text-white rounded-2xl flex-shrink-0 flex items-center justify-center text-xl shadow-lg"><i class="fa-solid fa-user-tie"></i></div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-black text-amber-600 uppercase tracking-widest">Project Mentor</p>
+                            <p class="font-black text-amber-900 text-lg leading-tight truncate">${p.mentor.firstName} ${p.mentor.lastName}</p>
+                            <p class="text-xs text-amber-700 font-medium">${p.mentor.org} • ${p.mentor.country}</p>
+                        </div>
+                    </div>
+                    <button onclick="openMentorModal(true)" class="h-10 w-10 rounded-xl bg-white text-amber-300 hover:bg-amber-600 hover:text-white transition-all flex items-center justify-center border border-amber-100"><i class="fa-solid fa-pen-to-square"></i></button>
+                </div>`;
+            }
+
+            const members = [
+                { id: 'leader', r: 'Team Leader', n: p.leaderName, e: p.leaderEmail, c: 'bg-sw-red' },
+                { id: 'm1', r: 'Member 01', n: p.m1Name, e: p.m1Email, c: 'bg-slate-700' },
+                { id: 'm2', r: 'Member 02', n: p.m2Name, e: p.m2Email, c: 'bg-slate-700' },
+                { id: 'm3', r: 'Member 03', n: p.m3Name, e: p.m3Email, c: 'bg-slate-700' }
+            ];
+
+            html += members.map(m => `<div class="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm flex items-center justify-between">
+                <div class="flex items-center gap-5 min-w-0">
+                    <div class="w-14 h-14 ${m.c} text-white rounded-2xl flex-shrink-0 flex items-center justify-center text-xl font-black">${m.n ? m.n.charAt(0) : '?'}</div>
+                    <div class="min-w-0"><p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">${m.r}</p>
+                    <p class="font-black text-ds-blue text-lg leading-tight truncate">${m.n || '---'}</p><p class="text-xs text-gray-500 italic truncate">${m.e || '---'}</p></div>
+                </div>
+                <button onclick="openEditModal('${m.id}', '${m.n}', '${m.e}')" class="h-10 w-10 rounded-xl bg-gray-50 text-gray-300 hover:bg-sw-red hover:text-white transition-all flex items-center justify-center"><i class="fa-solid fa-pen-to-square"></i></button>
+            </div>`).join('');
+
+            grid.innerHTML = html;
+        }
+
+        function renderTasks() {
+            const profile = JSON.parse(localStorage.getItem('teamProfile'));
+            const currentStep = profile.progressStep || 2;
+            const grid = document.getElementById('tasksGrid');
+            const now = new Date(); 
+            
+            grid.className = "flex flex-col lg:flex-row gap-8";
+
+            let leftColumnHtml = `<div class="w-full lg:w-[70%] flex flex-col">`;
+            
+            milestoneData.forEach((m, index) => {
+                const stepNum = index + 2;
+                const isCompleted = currentStep > stepNum;
+                const isActive = currentStep === stepNum;
+
+                let actionHtml = '';
+                if (isActive) {
+                    let isDateLocked = false;
+                    let dateMessage = '';
+
+                    if (m.title === 'Initial Design Challenge') {
+                        if (now < COMPETITION_DATES.idcStart) {
+                            isDateLocked = true;
+                            dateMessage = `Opens ${COMPETITION_DATES.idcStart.toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}`;
+                        } else if (now > COMPETITION_DATES.idcEnd) {
+                            isDateLocked = true;
+                            dateMessage = "Submission Closed";
+                        }
+                    } else if (m.title === 'Final Design Challenge') {
+                        if (now < COMPETITION_DATES.fdcStart) {
+                            isDateLocked = true;
+                            dateMessage = `Opens ${COMPETITION_DATES.fdcStart.toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}`;
+                        } else if (now > COMPETITION_DATES.fdcEnd) {
+                            isDateLocked = true;
+                            dateMessage = "Submission Closed";
+                        }
+                    }
+
+                    if (isDateLocked) {
+                        actionHtml = `<span class="text-[9px] font-black text-amber-600 bg-amber-50 border border-amber-200 uppercase tracking-widest px-4 py-3 rounded-xl w-full text-center shadow-sm block"><i class="fa-regular fa-clock mr-2"></i> ${dateMessage}</span>`;
+                    } else if (m.title === 'Mentor Registration') {
+                        actionHtml = `<button onclick="openMentorModal()" class="w-full py-3 bg-sw-red text-white text-[9px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-red-100 transition-all hover:scale-[1.02]">Register Mentor</button>`;
+                    } else {
+                        actionHtml = `
+                            <a href="${m.link}" target="_blank" class="w-full py-3 bg-gray-900 text-white text-[9px] font-black uppercase tracking-widest rounded-xl text-center block mb-2 transition-all hover:bg-gray-800">1. Open Portal</a>
+                            <button onclick="openSubmitModal('${m.title}')" class="w-full py-3 bg-sw-red text-white text-[9px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-red-100 transition-all hover:scale-[1.02]">2. Submit Link</button>
+                        `;
+                    }
+                } else if (isCompleted) {
+                    // --- RENDER COMPLETED STATE + DYNAMIC RESULT BUTTONS ---
+                    if (m.title === 'Initial Design Challenge') {
+                        actionHtml = `
+                            <span class="text-[9px] font-black text-green-600 bg-green-50 border border-green-200 uppercase tracking-widest px-3 py-2.5 rounded-xl w-full text-center shadow-sm block mb-2"><i class="fa-solid fa-check mr-1"></i> Submitted</span>
+                            <button onclick="viewResult('IDC')" class="w-full py-2.5 bg-ds-blue text-white text-[9px] font-black uppercase tracking-widest rounded-xl shadow-md hover:bg-blue-800 transition-all hover:scale-[1.02]"><i class="fa-solid fa-file-signature mr-1"></i> View Report</button>
+                        `;
+                    } else if (m.title === 'Final Design Challenge') {
+                        actionHtml = `
+                            <span class="text-[9px] font-black text-green-600 bg-green-50 border border-green-200 uppercase tracking-widest px-3 py-2.5 rounded-xl w-full text-center shadow-sm block mb-2"><i class="fa-solid fa-check mr-1"></i> Submitted</span>
+                            <button onclick="viewResult('FDC')" class="w-full py-2.5 bg-ds-blue text-white text-[9px] font-black uppercase tracking-widest rounded-xl shadow-md hover:bg-blue-800 transition-all hover:scale-[1.02]"><i class="fa-solid fa-file-signature mr-1"></i> View Report</button>
+                        `;
+                    } else {
+                        actionHtml = `<span class="text-[9px] font-black text-green-600 bg-green-50 border border-green-200 uppercase tracking-widest px-4 py-2 rounded-lg w-fit shadow-sm"><i class="fa-solid fa-check mr-1"></i> Completed</span>`;
+                    }
+                } else {
+                    // --- RENDER LOCKED STATE ---
+                    actionHtml = `<span class="text-[9px] font-black text-gray-400 bg-gray-100 border border-gray-200 uppercase tracking-widest px-4 py-2 rounded-lg w-fit shadow-sm">Locked Stage</span>`;
+                }
+
+                leftColumnHtml += `
+                <div class="bg-white p-8 rounded-[2.5rem] border ${isActive ? 'border-sw-red shadow-lg shadow-red-50' : 'border-gray-200 shadow-sm'} relative overflow-hidden group flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all duration-300">
+                    <div class="flex items-start gap-5">
+                        <div class="w-14 h-14 shrink-0 ${isCompleted ? 'bg-green-500 text-white' : (isActive ? 'bg-sw-red text-white' : 'bg-gray-100 text-gray-300')} rounded-2xl flex items-center justify-center text-xl transition-all shadow-sm">
+                            <i class="fa-solid ${isCompleted ? 'fa-check' : m.icon}"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-black text-ds-blue uppercase tracking-tight mb-1">${m.title}</h4>
+                            <p class="text-xs text-gray-500 font-medium leading-relaxed max-w-md">${m.desc}</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2 shrink-0 md:w-48">
+                        ${actionHtml}
+                    </div>
+                </div>`;
+
+                if (index < milestoneData.length - 1) {
+                    leftColumnHtml += `
+                    <div class="flex justify-center my-3">
+                        <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-gray-200 shadow-sm text-gray-300 z-10 relative">
+                            <i class="fa-solid fa-arrow-down text-xs"></i>
+                        </div>
+                    </div>`;
+                }
+            });
+            leftColumnHtml += `</div>`;
+
+            // ==========================================
+            // 2. RIGHT SECTION (30%) - EXTRA TILES
+            // ==========================================
+            const hasCompletedFirst3Tasks = currentStep >= 5;
+            const isPastJune1st = now >= COMPETITION_DATES.swKeyAvailable;
+            const isSwKeyActive = hasCompletedFirst3Tasks && isPastJune1st;
+            
+            let swKeyActionHtml = '';
+            if (!hasCompletedFirst3Tasks) {
+                swKeyActionHtml = `<span class="text-[8px] font-black text-gray-400 bg-gray-100 uppercase tracking-widest px-3 py-2 rounded-lg w-fit border border-gray-200 shadow-sm">Complete Tasks 1-3</span>`;
+            } else if (!isPastJune1st) {
+                swKeyActionHtml = `<span class="text-[8px] font-black text-amber-600 bg-amber-50 uppercase tracking-widest px-3 py-2 rounded-lg w-fit border border-amber-200 shadow-sm"><i class="fa-regular fa-clock mr-1"></i> Unlocks Jun 1</span>`;
+            } else {
+                swKeyActionHtml = `<button onclick="getSWKey()" class="w-full py-3 bg-sw-red text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-md hover:bg-red-700 transition-all hover:scale-[1.02]">Request Key</button>`;
+            }
+
+            const regionalUnlocked = currentStep >= 7;
+
+            let rightColumnHtml = `
+            <div class="w-full lg:w-[30%] flex flex-col gap-6 lg:border-l lg:border-gray-200 lg:pl-8 pt-2">
+                
+                <div class="bg-white p-8 rounded-[2.5rem] border ${isSwKeyActive ? 'border-sw-red shadow-lg shadow-red-50' : 'border-gray-200 shadow-sm'} relative flex flex-col justify-between transition-all duration-300">
+                    <div>
+                        <div class="w-12 h-12 ${isSwKeyActive ? 'bg-sw-red text-white' : 'bg-gray-100 text-gray-300'} rounded-2xl flex items-center justify-center text-xl mb-4 shadow-sm">
+                            <i class="fa-solid fa-key"></i>
+                        </div>
+                        <h4 class="text-sm font-black text-ds-blue uppercase tracking-tight mb-2">Software License</h4>
+                        <p class="text-xs text-gray-500 font-medium leading-relaxed mb-6">Get your SOLIDWORKS 2026 student edition key for the FDC phase.</p>
+                    </div>
+                    ${swKeyActionHtml}
+                </div>
+
+                <div class="bg-white p-8 rounded-[2.5rem] border ${regionalUnlocked ? 'border-sw-red shadow-lg shadow-red-50' : 'border-gray-200 shadow-sm'} relative flex flex-col justify-between transition-all duration-300">
+                    <div>
+                        <div class="w-12 h-12 ${regionalUnlocked ? 'bg-sw-red text-white' : 'bg-gray-100 text-gray-300'} rounded-2xl flex items-center justify-center text-xl mb-4 shadow-sm">
+                            <i class="fa-solid fa-lock-open"></i>
+                        </div>
+                        <h4 class="text-sm font-black text-ds-blue uppercase tracking-tight mb-2">Regional Task</h4>
+                        <p class="text-xs text-gray-500 font-medium leading-relaxed mb-6">This action will become available after Regional Qualification.</p>
+                    </div>
+                    ${regionalUnlocked 
+                        ? `<button onclick="handleFutureTask()" class="w-full py-3 bg-sw-red text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-md hover:bg-red-700 transition-all hover:scale-[1.02]">Take Action</button>` 
+                        : `<span class="text-[9px] font-black text-gray-400 bg-gray-100 uppercase tracking-widest px-3 py-2 rounded-lg w-fit border border-gray-200 shadow-sm">Locked Stage</span>`
+                    }
+                </div>
+            </div>`;
+
+            grid.innerHTML = leftColumnHtml + rightColumnHtml;
+        }
+
+        // DYNAMIC ANNOUNCEMENTS RENDERER
+        function renderAnnouncements() {
+            const container = document.getElementById('announcementsContainer');
+            if (!container) return; 
+            
+            container.innerHTML = announcementsData.map(a => `
+                <a href="${a.link}" target="_blank" rel="noopener noreferrer" class="group block p-5 rounded-2xl border border-gray-100 hover:border-sw-red hover:shadow-lg transition-all bg-gray-50 hover:bg-white cursor-pointer">
+                    <div class="flex justify-between items-start gap-4 min-w-0">
+                        <div class="min-w-0">
+                            <h4 class="font-black text-ds-blue text-sm group-hover:text-sw-red transition-colors truncate uppercase">${a.title}</h4>
+                            <p class="text-xs text-gray-500 mt-1 font-medium leading-relaxed">${a.desc}</p>
+                        </div>
+                        <span class="text-[9px] font-black bg-white border border-gray-200 text-gray-400 px-2 py-1 rounded-lg uppercase tracking-widest shrink-0 shadow-sm">${a.date}</span>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        function openSubmitModal(taskTitle) { 
+            currentTaskSubmission = taskTitle; // Save the task name!
+            document.getElementById('submitTaskModal').classList.remove('hidden'); 
+        }
+        
+        function openMentorModal(isEdit = false) {
+            const p = JSON.parse(localStorage.getItem('teamProfile'));
+            const modal = document.getElementById('mentorModal');
+            document.getElementById('mentorModalTitle').innerText = isEdit ? "Update Mentor Name" : "Mentor Registration";
+            
+            const fNameInput = document.getElementById('mentorFirstName');
+            const lNameInput = document.getElementById('mentorLastName');
+            const emailInput = document.getElementById('mentorEmail');
+            const orgInput = document.getElementById('mentorOrg');
+            const countryInput = document.getElementById('mentorCountry');
+
+            if(isEdit && p.mentor) {
+                fNameInput.value = p.mentor.firstName;
+                lNameInput.value = p.mentor.lastName;
+                emailInput.value = p.mentor.email;
+                orgInput.value = p.mentor.org;
+                countryInput.value = p.mentor.country;
+
+                [emailInput, orgInput, countryInput].forEach(input => {
+                    input.readOnly = true;
+                    input.classList.add('bg-gray-100', 'text-gray-400', 'cursor-not-allowed');
+                });
+            } else {
+                [fNameInput, lNameInput, emailInput, orgInput, countryInput].forEach(input => {
+                    input.value = '';
+                    input.readOnly = false;
+                    input.classList.remove('bg-gray-100', 'text-gray-400', 'cursor-not-allowed');
+                });
+            }
+            modal.classList.remove('hidden');
+        }
+
+        // MODIFIED: Added push to Google Sheets
+        // --- NEW: SCRIPT LOGIC FOR SMART POPUPS ---
+        let pendingSubmissionAction = null; // Remembers what function to run if the user clicks 'YES'
+
+        function handleConfirm(isYes) {
+            document.getElementById('confirmActionModal').classList.add('hidden'); // Close the Yes/No box
+            
+            if (isYes && typeof pendingSubmissionAction === 'function') {
+                pendingSubmissionAction(); // Run the saved task
+            }
+            pendingSubmissionAction = null; // Clear memory
+        }
+
+        function showSuccessPopup() {
+            const modal = document.getElementById('successModal');
+            const content = document.getElementById('successModalContent');
+            
+            modal.classList.remove('hidden');
+            
+            // Trigger animation
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+            // Hide it automatically after 1 second (1000ms)
+            setTimeout(() => {
+                content.classList.remove('scale-100', 'opacity-100');
+                content.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => modal.classList.add('hidden'), 300); // Wait for fade out
+            }, 1000);
+        }
+
+        // --- TASK SUBMISSION FLOW ---
+        // --- NEW: LOADER HELPERS ---
+        function showLoader() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
+        function hideLoader() { document.getElementById('loadingOverlay').classList.add('hidden'); }
+
+        // --- TASK SUBMISSION FLOW ---
+        function initiateTaskSubmission() {
+            const url = document.getElementById('communityUrl').value.trim();
+            
+            if(!url) return showCustomAlert("Please enter the submission link.", "Missing Link"); 
+
+            try {
+                const parsedUrl = new URL(url);
+                if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
+                    return showCustomAlert("The URL must start with http:// or https://", "Invalid Format");
+                }
+                if (!parsedUrl.hostname.includes("academia-3dswym.3dexperience.3ds.com")) {
+                    return showCustomAlert("The link must be from your official 3DEXPERIENCE workspace.", "Invalid Domain");
+                }
+            } catch (err) {
+                return showCustomAlert("Please enter a valid URL.", "Invalid Link");
+            }
+            
+            pendingSubmissionAction = async function() {
+                showLoader(); 
+                let profile = JSON.parse(localStorage.getItem('teamProfile'));
+
+                const formData = new FormData();
+                formData.append("teamID", profile.teamID || "N/A");
+                formData.append("teamName", profile.teamName || "N/A");
+                formData.append("leaderEmail", profile.leaderEmail || "N/A");
+                formData.append("projectURL", url);
+                formData.append("country", profile.country || "India");
+                formData.append("theme", profile.theme || "N/A");
+
+                if (currentTaskSubmission === 'Initial Design Challenge') {
+                    try { await fetch(IDC_EVAL_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: formData }); } 
+                    catch (error) { console.error("IDC Error:", error); }
+                } 
+                else if (currentTaskSubmission === 'Final Design Challenge') {
+                    try { await fetch(FDC_EVAL_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: formData }); } 
+                    catch (error) { console.error("FDC Error:", error); }
+                }
+
+                profile.progressStep = (profile.progressStep || 2) + 1;
+                localStorage.setItem('teamProfile', JSON.stringify(profile));
+                
+                closeModal('submitTaskModal');
+                document.getElementById('communityUrl').value = ''; 
+                
+                renderTasks();
+                setRoadmapProgress(profile.progressStep);
+                updateHomeDisplay(profile);
+
+                let mainSheetPayload = { progressStep: profile.progressStep };
+                if (currentTaskSubmission === 'Community Creation') { mainSheetPayload.communityLink = url; } 
+                else if (currentTaskSubmission === 'Selfie with Mentor') { mainSheetPayload.selfieLink = url; }
+                
+                await updateDataInSheet(mainSheetPayload); 
+
+                hideLoader(); 
+                showSuccessPopup(); 
+            };
+            document.getElementById('confirmActionModal').classList.remove('hidden');
+        }
+
+        // --- MENTOR REGISTRATION FLOW ---
+        function initiateMentorSubmission() {
+            const fName = document.getElementById('mentorFirstName').value.trim();
+            const lName = document.getElementById('mentorLastName').value.trim();
+            const email = document.getElementById('mentorEmail').value.trim();
+            const org = document.getElementById('mentorOrg').value.trim();
+            const country = document.getElementById('mentorCountry').value.trim();
+            
+            if(!fName || !lName || !email || !org || !country) {
+                return showCustomAlert("All fields are mandatory. Please fill in every detail before submitting.", "Missing Details");
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if(!emailRegex.test(email)) {
+                return showCustomAlert("Please enter a valid email address.", "Invalid Email");
+            }
+
+            const validCountries = Array.from(document.querySelectorAll('#countryList option')).map(opt => opt.value);
+            if(!validCountries.includes(country)) {
+                return showCustomAlert("Please select a valid country from the dropdown list. Custom entries are not permitted.", "Invalid Country");
+            }
+
+            pendingSubmissionAction = async function() {
+                showLoader(); 
+                let profile = JSON.parse(localStorage.getItem('teamProfile'));
+                if(!profile.mentor) profile.progressStep = 4;
+
+                profile.mentor = { firstName: fName, lastName: lName, email: email, org: org, country: country };
+                localStorage.setItem('teamProfile', JSON.stringify(profile));
+
+                closeModal('mentorModal');
+                renderTasks();
+                renderTeamGrid();
+                setRoadmapProgress(profile.progressStep);
+                updateHomeDisplay(profile);
+
+                await updateDataInSheet({
+                    mentorFirstName: fName, mentorLastName: lName, mentorEmail: email, mentorOrg: org, mentorCountry: country,
+                });
+
+                hideLoader(); 
+                showSuccessPopup(); 
+            };
+            document.getElementById('confirmActionModal').classList.remove('hidden');
+        }
+
+        // --- LIVE RESULTS FETCHING SYSTEM ---
+        async function viewResult(phase) { 
+            const profile = JSON.parse(localStorage.getItem('teamProfile'));
+            if (!profile || !profile.teamID) return showCustomAlert("Team ID not found.", "Error");
+
+            // 1. Trigger the loading screen
+            showLoader(); 
+
+            // 2. Route to the correct Google Sheet and set the specific Column Targets
+            const targetUrl = phase === 'IDC' ? IDC_RESULTS_CSV_URL : FDC_RESULTS_CSV_URL;
+            
+            const idCol = 2; // Column C for both sheets
+            let gradeCol, commentCol;
+
+            if (phase === 'IDC') {
+                gradeCol = 13;   // Column N
+                commentCol = 19; // Column T
+            } else {
+                gradeCol = 24;   // Column Y
+                commentCol = 29; // Column AD
+            }
+
+            try {
+                // 3. Download the live sheet data
+                const response = await fetch(targetUrl);
+                if (!response.ok) throw new Error(`Failed to fetch ${phase} results`);
+                const csvText = await response.text();
+                
+                // 4. Parse the data into a readable grid
+                const rows = parseCSV(csvText); 
+                
+                // 5. Scan Column C (index 2) to find this team's exact row
+                const teamRow = rows.find(row => row[idCol] && row[idCol].trim() === profile.teamID);
+
+                // 6. If the team isn't found, or if the Grade cell is empty, stop and show Pending alert
+                if (!teamRow || !teamRow[gradeCol] || teamRow[gradeCol].trim() === "") {
+                    hideLoader();
+                    return showCustomAlert(`Results for ${phase} are currently under evaluation. Please check back later.`, "Evaluation Pending");
+                }
+
+                // 7. Extract the Grade and Comment data
+                const grade = teamRow[gradeCol].trim();
+                const comments = teamRow[commentCol] ? teamRow[commentCol].trim() : "No additional evaluator comments provided.";
+
+                // 8. Populate the visual Certificate UI
+                const phaseTitle = phase === 'IDC' ? 'Initial Design Challenge' : 'Final Design Challenge';
+                document.getElementById('resultPhaseTitle').innerText = phaseTitle;
+                
+                document.getElementById('resultTeamName').innerText = profile.teamName || "---";
+                document.getElementById('resultTeamID').innerText = "ID: " + profile.teamID;
+                document.getElementById('resultTheme').innerText = profile.theme || "---";
+                document.getElementById('resultCollege').innerText = profile.college || "N/A";
+                document.getElementById('resultCountry').innerText = profile.country || "India";
+                document.getElementById('resultLeader').innerText = profile.leaderName || "---";
+                
+                let membersHtml = '';
+                if(profile.m1Name) membersHtml += `<li>${profile.m1Name}</li>`;
+                if(profile.m2Name) membersHtml += `<li>${profile.m2Name}</li>`;
+                if(profile.m3Name) membersHtml += `<li>${profile.m3Name}</li>`;
+                document.getElementById('resultMembers').innerHTML = membersHtml || "<li class='text-gray-400 italic'>No additional members</li>";
+
+                // Map Mentor Data if it exists
+                if(profile.mentor && profile.mentor.firstName) {
+                    document.getElementById('resultMentorName').innerText = `${profile.mentor.firstName} ${profile.mentor.lastName}`;
+                    document.getElementById('resultMentorDetails').innerText = `${profile.mentor.org} • ${profile.mentor.country}`;
+                } else {
+                    document.getElementById('resultMentorName').innerText = "---";
+                    document.getElementById('resultMentorDetails').innerText = "Not Registered";
+                }
+
+                // Inject the live grades and comments from the database
+                document.getElementById('resultGrade').innerText = grade;
+                document.getElementById('resultComments').innerText = `"${comments}"`;
+
+                // 9. Hide the loader and reveal the fully populated certificate
+                hideLoader();
+                document.getElementById('resultModal').classList.remove('hidden');
+
+            } catch (error) {
+                console.error(`System Error fetching ${phase} results:`, error);
+                hideLoader();
+                showCustomAlert("Could not connect to the evaluation database. Please ensure you have an active internet connection.", "Connection Error");
+            }
+        }
+
+        // NEW: Custom Print Function for dynamic PDF naming
+        function printCertificate() {
+            // 1. Save the original dashboard title so we can put it back later
+            const originalTitle = document.title;
+            
+            // 2. Grab the Team ID from the UI
+            const teamIdText = document.getElementById('resultTeamID').innerText.replace('ID: ', '').trim();
+            
+            // 3. THE FIX: Convert the text to uppercase before checking so the CSS doesn't break the logic!
+            const phaseTitleText = document.getElementById('resultPhaseTitle').innerText.toUpperCase();
+            const phaseText = phaseTitleText.includes('INITIAL') ? 'IDC' : 'FDC';
+            
+            // 4. Set the browser's title to the desired file name
+            document.title = `${teamIdText}_${phaseText}_Result`;
+            
+            // 5. Trigger the print dialogue
+            window.print();
+            
+            // 6. Restore the original title immediately after the print dialogue closes
+            document.title = originalTitle;
+        }
+
+        function updateHomeDisplay(p) {
+            document.getElementById('displayTeamID').innerText = "Team ID: " + p.teamID;
+            document.getElementById('homeTeamName').innerText = p.teamName;
+            document.getElementById('homeThemeHeader').innerText = p.theme || '---';
+            document.getElementById('homeCollege').innerText = p.college || "N/A";
+            document.getElementById('homeCountry').innerText = p.country || "India";
+            document.getElementById('homeLeader').innerText = p.leaderName || "---";
+            document.getElementById('homeLeaderEmail').innerText = p.leaderEmail || "---";
+            document.getElementById('headerInitial').innerText = p.leaderName ? p.leaderName.charAt(0) : '?';
+        }
+
+        function setRoadmapProgress(step) {
+            const containers = document.querySelectorAll('.step-container');
+            const fill = document.getElementById('progressLine');
+            fill.style.width = ((step - 1) / (containers.length - 1)) * 100 + "%";
+            containers.forEach((c, i) => {
+                const stepIndex = i + 1;
+                if (stepIndex < step) { 
+                    c.classList.add('completed'); 
+                    c.classList.remove('active');
+                    c.querySelector('.icon-circle i').className = "fa-solid fa-check"; 
+                }
+                else if (stepIndex === step) { 
+                    c.classList.remove('completed'); 
+                    c.classList.add('active'); 
+                }
+                else {
+                    c.classList.remove('completed', 'active');
+                }
+            });
+        }
+
+        // GOOGLE SHEETS INTEGRATION
+        async function checkFinaleQualifications(profile) {
+            const sheetCSVUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSEk4zu5STDL5FUDoWCIwR7IPkI_-iBSMI3DkuhLl08jgM78cJS9aNQbmxj3p0fE4k3RpisrhNnz0k3/pub?output=csv";
+            
+            try {
+                const response = await fetch(sheetCSVUrl);
+                const csvText = await response.text();
+                
+                // Split the CSV into rows and columns
+                const rows = csvText.split('\n').map(row => row.split(','));
+                
+                // Search for the logged-in team's ID in the Sheet
+                const teamData = rows.find(row => {
+                    if (!row || row.length === 0 || !row[0]) return false;
+                    const cellId = row[0].replace(/['"]+/g, '').trim(); 
+                    return cellId === profile.teamID;
+                });
+
+                if (teamData) {
+                    // Get the stage number from Column B
+                    const qualifiedStage = parseInt(teamData[1].replace(/['"]+/g, '').trim());
+                    
+                    // If the sheet says they are at a higher stage than their local profile, update it!
+                    if (!isNaN(qualifiedStage) && qualifiedStage > profile.progressStep) {
+                        profile.progressStep = qualifiedStage;
+                        localStorage.setItem('teamProfile', JSON.stringify(profile));
+                        
+                        // Update the UI instantly
+                        setRoadmapProgress(profile.progressStep);
+                        renderTasks();
+                        
+                        console.log(`Congratulations! Team upgraded to stage ${qualifiedStage}`);
+                    }
+                }
+            } catch (error) {
+                console.error("Could not fetch qualification data: ", error);
+            }
+        }
+		
+		// --- EXTRA TILES LOGIC ---
+        
+        function getSWKey() {
+            // Opens the modal when the "Request Key" button is clicked
+            document.getElementById('swKeyModal').classList.remove('hidden');
+        }
+
+        function copySWKey() {
+            const keyInput = document.getElementById('swLicenseKeyInput');
+            const copyBtn = document.getElementById('copyKeyBtn');
+            
+            // 1. Select the text and copy to clipboard
+            keyInput.select();
+            keyInput.setSelectionRange(0, 99999); // Fallback for mobile devices
+            navigator.clipboard.writeText(keyInput.value);
+            
+            // 2. Visual feedback: Change button to green "COPIED!"
+            const originalText = copyBtn.innerText;
+            copyBtn.innerText = "Copied!";
+            copyBtn.classList.replace('bg-ds-blue', 'bg-green-500');
+            copyBtn.classList.replace('hover:bg-blue-800', 'hover:bg-green-600');
+            
+            // 3. Reset the button back to normal after 2 seconds
+            setTimeout(() => {
+                copyBtn.innerText = originalText;
+                copyBtn.classList.replace('bg-green-500', 'bg-ds-blue');
+                copyBtn.classList.replace('hover:bg-green-600', 'hover:bg-blue-800');
+                // Deselect the text
+                window.getSelection().removeAllRanges();
+            }, 2000);
+        }
+
+        function handleFutureTask() {
+            showCustomAlert("This action will become available after your team qualifies for the Regional Finale.", "Locked Stage");
+        }
+		
+        // --- LOGOUT FLOW ---
+        function handleLogout() { 
+            // Opens the custom confirmation modal instead of the browser alert
+            document.getElementById('logoutConfirmModal').classList.remove('hidden'); 
+        }
+
+        function executeLogout() {
+            // Actually clears the data and redirects when they click "Yes"
+            localStorage.clear(); 
+            window.location.href = 'Student_login.html'; 
+        }
+
+        // INITIALIZATION
+        // INITIALIZATION
+        window.onload = function() {
+            const p = JSON.parse(localStorage.getItem('teamProfile'));
+            if (!p) { window.location.href = 'Student_login.html'; return; }
+            if(!p.progressStep) p.progressStep = 2;
+            localStorage.setItem('teamProfile', JSON.stringify(p));
+            
+            updateHomeDisplay(p);
+            renderTeamGrid();
+            renderTasks();
+            renderAnnouncements();
+            setRoadmapProgress(p.progressStep);
+
+            // Silently check Google Sheets in the background for Finale promotions
+            checkFinaleQualifications(p);
+
+            // --- NEW: AUTO-LOAD SEARCHABLE COUNTRIES ---
+            fetch('https://restcountries.com/v3.1/all?fields=name')
+                .then(res => res.json())
+                .then(data => {
+                    const sortedCountries = data.map(c => c.name.common).sort();
+                    document.getElementById('countryList').innerHTML = sortedCountries.map(c => `<option value="${c}">`).join('');
+                }).catch(err => console.error("Failed to load countries", err));
+        };
+    </script>
+</body>
+</html>

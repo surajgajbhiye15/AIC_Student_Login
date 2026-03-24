@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AAKRUTI 2026 | Student Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Force no-scroll and locked proportions */
+        html, body {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            /* Base font size scales with screen width */
+            font-size: clamp(12px, 1vw + 4px, 20px);
+        }
+
+        .bg-wrapper {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+        }
+
+        .bg-image {
+            width: 100%; height: 100%;
+            background-image: url('https://3dswym.3dexperience.3ds.com/media?id=koMMAywMTAOa-16zu4mf7w&v=64dd741c91f8ca8951f4f7a625d3a22895bceb08a5557905fc61ddbfed1c8899');
+            background-size: cover; 
+            background-position: center;
+            filter: blur(10px); 
+            transform: scale(1.1);
+        }
+
+        .white-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(255, 255, 255, 0.78);
+        }
+
+        .sw-red { color: #E82127; }
+        .bg-sw-red { background-color: #E82127; }
+
+        /* Proportionally sized card */
+        .auth-card {
+            width: 90%;
+            max-width: 25rem;
+            padding: 5vh 2.5rem; /* Padding scales with height */
+            border-radius: 2rem;
+        }
+
+        /* Fixed input sizing to prevent "squishing" on small screens */
+        input {
+            height: 3rem;
+            font-size: 0.9rem !important;
+        }
+    </style>
+</head>
+<body class="flex flex-col antialiased">
+
+    <div class="bg-wrapper">
+        <div class="bg-image"></div>
+        <div class="white-overlay"></div>
+    </div>
+
+    <header class="h-[12vh] flex items-center px-[5vw] flex-shrink-0">
+        <img src="https://github.com/surajgajbhiye15/index/blob/main/Aakruti%20Logo.png?raw=true" 
+             alt="AAKRUTI Logo" 
+             class="h-[50%] w-auto drop-shadow-sm">
+    </header>
+
+    <main class="flex-grow flex flex-col items-center justify-center min-h-0">
+        
+        <div class="text-center mb-[4vh] flex-shrink-0">
+            <h1 class="text-[2.2rem] md:text-[3rem] font-black sw-red leading-none uppercase tracking-tighter">
+                AAKRUTI Innovation Competition 2026
+            </h1>
+            <p class="text-gray-700 text-[0.8rem] md:text-[1rem] font-bold uppercase tracking-[0.3em] mt-1">
+                Students Dashboard
+            </p>
+        </div>
+
+        <div class="auth-card bg-white/95 backdrop-blur-md shadow-2xl border border-white flex-shrink-0">
+            <h2 class="text-[1.4rem] font-bold text-gray-800 mb-[3vh] text-center">Sign In</h2>
+            
+            <form id="loginForm" class="space-y-[2vh]">
+                <div>
+                    <label class="block text-[0.65rem] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Team ID</label>
+                    <input type="text" name="teamID" id="teamID" required 
+                        class="w-full px-4 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-[#E82127] outline-none transition-all shadow-sm"
+                        placeholder="e.g. AIC2026-XXXX">
+                </div>
+
+                <div>
+                    <label class="block text-[0.65rem] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Leader's Email</label>
+                    <input type="email" name="leaderEmail" id="leaderEmail" required 
+                        class="w-full px-4 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-[#E82127] outline-none transition-all shadow-sm"
+                        placeholder="leader@university.com">
+                </div>
+
+                <div>
+                    <label class="block text-[0.65rem] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Student's Email</label>
+                    <input type="email" name="studentEmail" id="studentEmail" required 
+                        class="w-full px-4 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-[#E82127] outline-none transition-all shadow-sm"
+                        placeholder="you@university.com">
+                </div>
+
+                <button type="submit" id="submitBtn"
+                    class="w-full bg-sw-red text-white font-black py-[1.2rem] rounded-xl shadow-lg hover:shadow-2xl hover:brightness-110 active:scale-[0.97] transition-all text-[0.9rem] uppercase tracking-widest mt-[1vh]">
+                    Access Dashboard
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <footer class="h-[8vh] flex items-center justify-center text-gray-500 text-[0.65rem] font-medium flex-shrink-0">
+        © 2026 AAKRUTI Innovation Competition | Dassault Systèmes
+    </footer>
+
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxUje6NWG6YImC6purIkf8XJklFoIrGcZ78UnNxjO6C8EXaY5aKN3alcn0ECGCalamJ/exec';
+    const form = document.getElementById('loginForm');
+    const btn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        btn.disabled = true;
+        btn.innerText = "Verifying Team Credentials...";
+
+        fetch(scriptURL, { method: 'POST', body: new FormData(form) })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "Found") {
+                // IMPORTANT: Save the entire profile to LocalStorage
+                localStorage.setItem('teamProfile', JSON.stringify(data));
+                window.location.href = 'dashboard.html';
+            } else {
+                alert("Login Failed: Details do not match our registered database.");
+                btn.disabled = false;
+                btn.innerText = "Access Dashboard";
+            }
+        })
+        .catch(error => {
+            alert("Error: " + error.message);
+            btn.disabled = false;
+        });
+    });
+</script>
+</body>
+</html>

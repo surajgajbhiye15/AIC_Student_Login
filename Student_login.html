@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AAKRUTI 2026 | Student Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <script>
         tailwind.config = {
             theme: {
@@ -16,63 +19,76 @@
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        /* 🚀 THE ULTIMATE NO-SCROLL SCALING ENGINE 🚀 */
+        html {
+            font-size: clamp(10px, min(1.3vw, 1.8vh), 18px); 
+        }
+
+        @media (max-width: 768px) {
+            html {
+                font-size: clamp(12px, min(3.5vw, 2.5vh), 16px);
+            }
+        }
+
         body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col relative antialiased">
+
+<body class="h-[100dvh] w-full overflow-hidden flex flex-col relative antialiased">
 
     <div class="fixed inset-0 z-[-2] bg-[url('https://3dswym.3dexperience.3ds.com/media?id=koMMAywMTAOa-16zu4mf7w&v=64dd741c91f8ca8951f4f7a625d3a22895bceb08a5557905fc61ddbfed1c8899')] bg-cover bg-center blur-[10px] scale-110"></div>
     <div class="fixed inset-0 z-[-1] bg-white/80"></div>
 
-    <header class="w-full p-6 flex justify-center md:justify-start">
-        <img src="https://github.com/surajgajbhiye15/index/blob/main/Aakruti%20Logo.png?raw=true" alt="AAKRUTI Logo" class="h-10 drop-shadow-sm">
+    <header class="w-full pt-6 px-8 flex justify-center shrink-0">
+        <img src="https://github.com/surajgajbhiye15/index/blob/main/Aakruti%20Logo.png?raw=true" alt="AAKRUTI Logo" class="h-14 drop-shadow-sm">
     </header>
 
-    <main class="flex-grow flex flex-col items-center justify-center p-6 pb-12">
+    <main class="flex-grow flex flex-col items-center justify-center p-4 w-full">
         
-        <div class="text-center mb-10 w-full px-4">
-            <h1 class="text-[4.5vw] md:text-4xl lg:text-5xl font-black text-sw-red leading-none uppercase tracking-tighter whitespace-nowrap">
+        <div class="text-center mb-8 w-full px-4 shrink-0">
+            <h1 class="text-[2.6rem] font-black text-sw-red leading-none uppercase tracking-tighter whitespace-nowrap">
                 AAKRUTI Innovation Competition 2026
             </h1>
-            <p class="text-gray-700 text-xs md:text-sm font-bold uppercase tracking-[0.3em] mt-3">
+            <p class="text-gray-700 text-[0.8rem] font-bold uppercase tracking-[0.3em] mt-3">
                 Students Dashboard
             </p>
         </div>
 
-        <div class="w-full max-w-md bg-white/90 backdrop-blur-xl shadow-2xl border border-white rounded-[2rem] p-8 md:p-10">
+        <div class="w-full max-w-[28rem] bg-white/90 backdrop-blur-xl shadow-2xl border border-white rounded-[2rem] p-8 shrink-0">
             <h2 class="text-2xl font-bold text-gray-800 mb-8 text-center">Sign In</h2>
             
             <form id="loginForm" class="space-y-5">
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Team ID</label>
+                    <label class="block text-[0.8rem] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Team ID</label>
                     <input type="text" name="teamID" id="teamID" required 
-                        class="w-full h-12 px-4 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-[#E82127] outline-none transition-all shadow-sm text-sm font-bold text-gray-800"
+                        class="w-full h-12 px-4 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-[#E82127] outline-none transition-all shadow-sm text-base font-bold text-gray-800"
                         placeholder="e.g. AIC2026-XXXX">
                 </div>
 
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Leader's Email</label>
+                    <label class="block text-[0.8rem] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Leader's Email</label>
                     <input type="email" name="leaderEmail" id="leaderEmail" required 
-                        class="w-full h-12 px-4 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-[#E82127] outline-none transition-all shadow-sm text-sm font-bold text-gray-800"
+                        class="w-full h-12 px-4 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-[#E82127] outline-none transition-all shadow-sm text-base font-bold text-gray-800"
                         placeholder="leader@university.com">
                 </div>
 
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Student's Email</label>
+                    <label class="block text-[0.8rem] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Student's Email</label>
                     <input type="email" name="studentEmail" id="studentEmail" required 
-                        class="w-full h-12 px-4 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-[#E82127] outline-none transition-all shadow-sm text-sm font-bold text-gray-800"
+                        class="w-full h-12 px-4 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-[#E82127] outline-none transition-all shadow-sm text-base font-bold text-gray-800"
                         placeholder="you@university.com">
                 </div>
 
                 <button type="submit" id="submitBtn"
-                    class="w-full bg-sw-red text-white font-black h-14 rounded-xl shadow-lg hover:shadow-xl hover:bg-red-700 active:scale-[0.98] transition-all text-xs uppercase tracking-widest mt-4">
+                    class="w-full flex items-center justify-center bg-sw-red text-white font-black h-14 rounded-xl shadow-lg hover:shadow-xl hover:bg-red-700 active:scale-[0.98] transition-all text-sm uppercase tracking-widest mt-4">
                     Access Dashboard
                 </button>
             </form>
         </div>
     </main>
 
-    <footer class="w-full py-6 flex items-center justify-center text-gray-500 text-[10px] font-bold uppercase tracking-widest text-center px-4">
+    <footer class="w-full py-4 flex items-center justify-center text-gray-500 text-[0.65rem] font-bold uppercase tracking-widest text-center px-4 shrink-0">
         © 2026 AAKRUTI Innovation Competition | Dassault Systèmes
     </footer>
 
@@ -84,9 +100,9 @@
     form.addEventListener('submit', e => {
         e.preventDefault();
         btn.disabled = true;
-        btn.innerText = "Verifying Credentials...";
+        
+        btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Verifying Credentials...`;
 
-        // NEW: Tell the script we are logging in
         const loginData = new FormData(form);
         loginData.append('action', 'login'); 
 
@@ -94,10 +110,8 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === "Found") {
-                // Ensure progressStep is an integer
                 data.progressStep = data.progressStep ? parseInt(data.progressStep) : 2;
 
-                // Rebuild the mentor object for the dashboard
                 if (data.mentorFirstName) {
                     data.mentor = {
                         firstName: data.mentorFirstName,
@@ -113,13 +127,13 @@
             } else {
                 alert("Login Failed: Details do not match our registered database.");
                 btn.disabled = false;
-                btn.innerText = "Access Dashboard";
+                btn.innerHTML = "Access Dashboard";
             }
         })
         .catch(error => {
             alert("Connection Error. Please check your internet and try again.");
             btn.disabled = false;
-            btn.innerText = "Access Dashboard";
+            btn.innerHTML = "Access Dashboard";
         });
     });
 </script>

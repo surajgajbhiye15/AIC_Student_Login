@@ -706,8 +706,8 @@
         let currentRole = '';
         let selectedThemeTemp = "";
 
-        // NEW: Google Apps Script Web App URL
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzxfz1v6SeVQrRfe2Doq7BNWOG9XQxQUSFS-QJprIgP2vMD6auGmuUZI7cw5u45SQIs/exec";
+        // NEW: Google Apps Script Web App URL LOGIN data
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwYtwdt5l5oKQVBCCsWMSN48Azl7G8Qe7l4fqF-DZRPYkA1i7IRsC4aslYPg1h1vCkY/exec";
 		
 		let currentTaskSubmission = ""; // Tracks which task is being submitted
         
@@ -720,7 +720,7 @@
         // ==========================================
         const COMPETITION_DATES = {
             idcStart: new Date('2026-03-24T00:00:00'),
-            idcEnd: new Date('2026-04-24T23:59:59'),
+            idcEnd: new Date('2026-04-25T23:59:59'),
             
             fdcStart: new Date('2026-03-24T00:00:00'),
             fdcEnd: new Date('2026-07-30T23:59:59'),
@@ -766,24 +766,20 @@
             const profile = JSON.parse(localStorage.getItem('teamProfile'));
             if (!profile || !profile.teamID) return;
 
-            // Set the required parameters for your Apps Script
+            // Tell the master script we are updating data
             updateParams.action = 'update';
             updateParams.teamID = profile.teamID;
 
-            // Convert the data into URL parameters so e.parameter can read it
             const formBody = new URLSearchParams(updateParams);
 
             try {
-                const response = await fetch(APPS_SCRIPT_URL, {
+                // mode: 'no-cors' prevents browser blocks
+                await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
+                    mode: 'no-cors', 
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: formBody.toString()
                 });
-                
-                const result = await response.json();
-                console.log("Google Sheet Update:", result);
             } catch (error) {
                 console.error("Failed to update Google Sheet:", error);
             }
@@ -1078,9 +1074,13 @@
             // ==========================================
             // 2. RIGHT SECTION (30%) - EXTRA TILES
             // ==========================================
+            // ==========================================
+            // 2. RIGHT SECTION (30%) - EXTRA TILES
+            // ==========================================
             const hasCompletedFirst3Tasks = currentStep >= 5;
             const isPastJune1st = now >= COMPETITION_DATES.swKeyAvailable;
             const isSwKeyActive = hasCompletedFirst3Tasks && isPastJune1st;
+            const isPastFdcDeadline = now > COMPETITION_DATES.fdcEnd;
             
             let swKeyActionHtml = '';
             if (!hasCompletedFirst3Tasks) {
@@ -1092,15 +1092,26 @@
             }
 
             const regionalUnlocked = currentStep >= 7;
+            const certUnlocked = hasCompletedFirst3Tasks && isPastFdcDeadline; 
+
+            let certActionHtml = '';
+            if (!hasCompletedFirst3Tasks) {
+                certActionHtml = `<span class="text-[8px] font-black text-gray-400 bg-gray-100 uppercase tracking-widest px-3 py-2 rounded-lg w-fit border border-gray-200 shadow-sm">Complete Tasks 1-3</span>`;
+            } else if (!isPastFdcDeadline) {
+                const unlockDate = new Date(COMPETITION_DATES.fdcEnd);
+                unlockDate.setDate(unlockDate.getDate() + 1); 
+                const dateStr = unlockDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+                certActionHtml = `<span class="text-[8px] font-black text-amber-600 bg-amber-50 uppercase tracking-widest px-3 py-2 rounded-lg w-fit border border-amber-200 shadow-sm"><i class="fa-regular fa-clock mr-1"></i> Unlocks ${dateStr}</span>`;
+            } else {
+                certActionHtml = `<a href="certificates.html" target="_blank" class="w-full py-3 bg-sw-red text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-md hover:bg-red-700 transition-all hover:scale-[1.02] text-center block">Download</a>`;
+            }
 
             let rightColumnHtml = `
             <div class="w-full lg:w-[30%] flex flex-col gap-6 lg:border-l lg:border-gray-200 lg:pl-8 pt-2">
                 
                 <div class="bg-white p-8 rounded-[2.5rem] border ${isSwKeyActive ? 'border-sw-red shadow-lg shadow-red-50' : 'border-gray-200 shadow-sm'} relative flex flex-col justify-between transition-all duration-300">
                     <div>
-                        <div class="w-12 h-12 ${isSwKeyActive ? 'bg-sw-red text-white' : 'bg-gray-100 text-gray-300'} rounded-2xl flex items-center justify-center text-xl mb-4 shadow-sm">
-                            <i class="fa-solid fa-key"></i>
-                        </div>
+                        <div class="w-12 h-12 ${isSwKeyActive ? 'bg-sw-red text-white' : 'bg-gray-100 text-gray-300'} rounded-2xl flex items-center justify-center text-xl mb-4 shadow-sm"><i class="fa-solid fa-key"></i></div>
                         <h4 class="text-sm font-black text-ds-blue uppercase tracking-tight mb-2">Software License</h4>
                         <p class="text-xs text-gray-500 font-medium leading-relaxed mb-6">Get your SOLIDWORKS 2026 student edition key for the FDC phase.</p>
                     </div>
@@ -1109,17 +1120,22 @@
 
                 <div class="bg-white p-8 rounded-[2.5rem] border ${regionalUnlocked ? 'border-sw-red shadow-lg shadow-red-50' : 'border-gray-200 shadow-sm'} relative flex flex-col justify-between transition-all duration-300">
                     <div>
-                        <div class="w-12 h-12 ${regionalUnlocked ? 'bg-sw-red text-white' : 'bg-gray-100 text-gray-300'} rounded-2xl flex items-center justify-center text-xl mb-4 shadow-sm">
-                            <i class="fa-solid fa-lock-open"></i>
-                        </div>
+                        <div class="w-12 h-12 ${regionalUnlocked ? 'bg-sw-red text-white' : 'bg-gray-100 text-gray-300'} rounded-2xl flex items-center justify-center text-xl mb-4 shadow-sm"><i class="fa-solid fa-lock-open"></i></div>
                         <h4 class="text-sm font-black text-ds-blue uppercase tracking-tight mb-2">Regional Task</h4>
                         <p class="text-xs text-gray-500 font-medium leading-relaxed mb-6">This action will become available after Regional Qualification.</p>
                     </div>
-                    ${regionalUnlocked 
-                        ? `<button onclick="handleFutureTask()" class="w-full py-3 bg-sw-red text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-md hover:bg-red-700 transition-all hover:scale-[1.02]">Take Action</button>` 
-                        : `<span class="text-[9px] font-black text-gray-400 bg-gray-100 uppercase tracking-widest px-3 py-2 rounded-lg w-fit border border-gray-200 shadow-sm">Locked Stage</span>`
-                    }
+                    ${regionalUnlocked ? `<button onclick="handleFutureTask()" class="w-full py-3 bg-sw-red text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-md hover:bg-red-700 transition-all hover:scale-[1.02]">Take Action</button>` : `<span class="text-[9px] font-black text-gray-400 bg-gray-100 uppercase tracking-widest px-3 py-2 rounded-lg w-fit border border-gray-200 shadow-sm">Locked Stage</span>`}
                 </div>
+
+                <div class="bg-white p-8 rounded-[2.5rem] border ${certUnlocked ? 'border-sw-red shadow-lg shadow-red-50' : 'border-gray-200 shadow-sm'} relative flex flex-col justify-between transition-all duration-300">
+                    <div>
+                        <div class="w-12 h-12 ${certUnlocked ? 'bg-sw-red text-white' : 'bg-gray-100 text-gray-300'} rounded-2xl flex items-center justify-center text-xl mb-4 shadow-sm"><i class="fa-solid fa-award"></i></div>
+                        <h4 class="text-sm font-black text-ds-blue uppercase tracking-tight mb-2">Certificates</h4>
+                        <p class="text-xs text-gray-500 font-medium leading-relaxed mb-6">Download the official participation certificates for your team and mentor.</p>
+                    </div>
+                    ${certActionHtml}
+                </div>
+
             </div>`;
 
             grid.innerHTML = leftColumnHtml + rightColumnHtml;
@@ -1316,7 +1332,12 @@
                 updateHomeDisplay(profile);
 
                 await updateDataInSheet({
-                    mentorFirstName: fName, mentorLastName: lName, mentorEmail: email, mentorOrg: org, mentorCountry: country,
+                    progressStep: profile.progressStep, // THIS SAVES THEIR TIMELINE
+                    mentorFirstName: fName, 
+                    mentorLastName: lName, 
+                    mentorEmail: email, 
+                    mentorOrg: org, 
+                    mentorCountry: country,
                 });
 
                 hideLoader(); 
@@ -1376,8 +1397,8 @@
                 document.getElementById('resultTeamName').innerText = profile.teamName || "---";
                 document.getElementById('resultTeamID').innerText = "ID: " + profile.teamID;
                 document.getElementById('resultTheme').innerText = profile.theme || "---";
-                document.getElementById('resultCollege').innerText = profile.college || "N/A";
-                document.getElementById('resultCountry').innerText = profile.country || "India";
+                document.getElementById('resultCollege').innerText = profile.collegeName || "---";
+                document.getElementById('resultCountry').innerText = profile.teamCountry || "---";
                 document.getElementById('resultLeader').innerText = profile.leaderName || "---";
                 
                 let membersHtml = '';
@@ -1436,8 +1457,8 @@
             document.getElementById('displayTeamID').innerText = "Team ID: " + p.teamID;
             document.getElementById('homeTeamName').innerText = p.teamName;
             document.getElementById('homeThemeHeader').innerText = p.theme || '---';
-            document.getElementById('homeCollege').innerText = p.college || "N/A";
-            document.getElementById('homeCountry').innerText = p.country || "India";
+            document.getElementById('homeCollege').innerText = p.collegeName || "---";
+            document.getElementById('homeCountry').innerText = p.teamCountry || "---";
             document.getElementById('homeLeader').innerText = p.leaderName || "---";
             document.getElementById('homeLeaderEmail').innerText = p.leaderEmail || "---";
             document.getElementById('headerInitial').innerText = p.leaderName ? p.leaderName.charAt(0) : '?';

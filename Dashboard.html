@@ -1609,29 +1609,32 @@
         };
 
 		function launchCertificatePopup() {
-            // 1. Show the dashboard's built-in loading spinner
-            showLoader();
-            document.querySelector('#loadingOverlay h3').innerText = "Generating PDF...";
+            const profile = JSON.parse(localStorage.getItem('teamProfile'));
+            if (!profile) return showCustomAlert("Team profile missing.", "Error");
 
-            // 2. Destroy any old ghost frames if the user clicked download previously
-            const oldFrame = document.getElementById('ghostCertFrame');
-            if (oldFrame) oldFrame.remove();
+            // 1. Grab the button that was clicked so we can show a loading spinner
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Generating...`;
+            btn.disabled = true;
 
-            // 3. Create the invisible Ghost Iframe
-            const ghostFrame = document.createElement('iframe');
-            ghostFrame.src = 'certificates.html';
-            ghostFrame.style.display = 'none'; // Completely invisible
-            ghostFrame.id = 'ghostCertFrame';
-            
-            // Append it to the page (this forces it to load inside the 3DX sandbox!)
-            document.body.appendChild(ghostFrame);
+            // 2. Pack the data into the digital backpack
+            const safeData = encodeURIComponent(JSON.stringify(profile));
+            const url = `certificates.html?data=${safeData}`;
 
-            // 4. Hide the loader after 3.5 seconds (giving the PDF time to build and download)
+            // 3. 🚀 THE GHOST FRAME 🚀 
+            // Create an invisible iframe to run the certificate code in the background
+            const hiddenIframe = document.createElement('iframe');
+            hiddenIframe.style.display = 'none'; // Keep it completely invisible!
+            hiddenIframe.src = url;
+            document.body.appendChild(hiddenIframe);
+
+            // 4. Clean up after 3 seconds (gives the PDF plenty of time to download)
             setTimeout(() => {
-                hideLoader();
-                // Reset the loader text back to normal
-                document.querySelector('#loadingOverlay h3').innerText = "Processing Submission..."; 
-            }, 3500);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                document.body.removeChild(hiddenIframe); // Destroy the ghost frame
+            }, 3000);
         }
     </script>
 </body>

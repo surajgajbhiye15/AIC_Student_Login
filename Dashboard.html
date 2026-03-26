@@ -964,18 +964,27 @@
                 { id: 'm3', r: 'Member 03', n: p.m3Name, e: p.m3Email, c: 'bg-slate-700' }
             ];
 
-            html += members.map(m => `<div class="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm flex items-center justify-between">
+            // MODIFIED: Added structured spacing, an envelope icon, and explicit 'No Email' fallbacks!
+            html += members.map(m => `<div class="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm flex items-center justify-between hover:border-gray-200 transition-colors">
                 <div class="flex items-center gap-5 min-w-0">
-                    <div class="w-14 h-14 ${m.c} text-white rounded-2xl flex-shrink-0 flex items-center justify-center text-xl font-black">${m.n ? m.n.charAt(0) : '?'}</div>
-                    <div class="min-w-0"><p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">${m.r}</p>
-                    <p class="font-black text-ds-blue text-lg leading-tight truncate">${m.n || '---'}</p><p class="text-xs text-gray-500 italic truncate">${m.e || '---'}</p></div>
+                    <div class="w-14 h-14 ${m.c} text-white rounded-2xl flex-shrink-0 flex items-center justify-center text-xl font-black shadow-sm">
+                        ${m.n && m.n !== '---' ? m.n.charAt(0).toUpperCase() : '?'}
+                    </div>
+                    <div class="min-w-0 flex flex-col justify-center">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5">${m.r}</p>
+                        <p class="font-black text-ds-blue text-lg leading-tight truncate">${m.n || '---'}</p>
+                        <p class="text-xs text-gray-500 font-medium truncate mt-1 flex items-center gap-1.5">
+                            <i class="fa-solid fa-envelope text-gray-400"></i> ${m.e && m.e !== 'undefined' ? m.e : 'No Email Registered'}
+                        </p>
+                    </div>
                 </div>
-                <button onclick="openEditModal('${m.id}', '${m.n}', '${m.e}')" class="h-10 w-10 rounded-xl bg-gray-50 text-gray-300 hover:bg-sw-red hover:text-white transition-all flex items-center justify-center"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button onclick="openEditModal('${m.id}', '${m.n}', '${m.e}')" class="h-10 w-10 rounded-xl bg-gray-50 text-gray-400 hover:bg-sw-red hover:text-white hover:shadow-md transition-all flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </button>
             </div>`).join('');
 
             grid.innerHTML = html;
         }
-
         function renderTasks() {
             const profile = JSON.parse(localStorage.getItem('teamProfile'));
             const currentStep = profile.progressStep || 2;

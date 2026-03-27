@@ -93,7 +93,7 @@
     </footer>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwwG-llagXBeITDMyDirKpe8ZsH64mWcgmiu4WEzI8ksaafYGViz2WEDdjhY88M3QPq/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbw4LPjhJq7CvHLB5l2zSAd_Q0M5n1-kbuUgOJSY9nUTWnfu9byX1d_DTAC8F_Ivafvf/exec';
     const form = document.getElementById('loginForm');
     const btn = document.getElementById('submitBtn');
 
@@ -104,7 +104,8 @@
         btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Verifying Credentials...`;
 
         const loginData = new FormData(form);
-        loginData.append('action', 'login'); 
+        loginData.append('action', 'login');
+        loginData.append('passkey', 'Aakruti_Secure_2026_x99!');
 
         fetch(scriptURL, { method: 'POST', body: loginData })
         .then(response => response.json())

@@ -152,14 +152,9 @@
             <button onclick="showSection('tasks', this)" class="sidebar-item w-full flex items-center p-3 rounded-xl text-gray-400 hover:bg-gray-100 transition-all font-bold group">
                 <i class="fa-solid fa-list-check mr-3"></i> Assigned Tasks
             </button>
-            <button onclick="showSection('wiki', this)" class="sidebar-item w-full flex items-center p-3 rounded-xl text-gray-400 hover:bg-gray-100 transition-all font-bold group">
-                <i class="fa-solid fa-book-open mr-3"></i> Wiki
-            </button>
 			<button onclick="showSection('deadlines', this)" class="sidebar-item w-full flex items-center p-3 rounded-xl text-gray-400 hover:bg-gray-100 transition-all font-bold group">
                 <i class="fa-solid fa-calendar-days mr-3"></i> Important Deadlines
             </button>
-		
-            
             <div class="flex flex-col w-full">
                 <button onclick="toggleWinnersMenu()" id="winnersMenuBtn" class="sidebar-item w-full flex items-center justify-between p-3 rounded-xl text-gray-400 hover:bg-gray-100 transition-all font-bold group">
                     <div class="flex items-center">
@@ -177,6 +172,9 @@
                     </button>
                 </div>
             </div>
+			<button onclick="showSection('wiki', this)" class="sidebar-item w-full flex items-center p-3 rounded-xl text-gray-400 hover:bg-gray-100 transition-all font-bold group">
+                <i class="fa-solid fa-book-open mr-3"></i> Wiki
+            </button>
         </nav>
         <div class="p-4 border-t">
             <button onclick="handleLogout()" class="w-full flex items-center p-3 text-gray-400 font-bold hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
@@ -188,11 +186,31 @@
 
     <div class="flex-1 flex flex-col min-w-0">
         
-        <header class="h-16 bg-white border-b px-8 flex justify-between items-center flex-shrink-0">
-            <h2 id="sectionTitle" class="text-lg font-black text-ds-blue uppercase italic tracking-tighter">Home Page</h2>
-            <div class="flex items-center gap-4">
-                <span id="displayTeamID" class="text-xs font-bold text-gray-400 bg-gray-50 px-3 py-1 rounded-lg border">Team ID: ---</span>
-                <div class="h-10 w-10 bg-sw-red rounded-xl flex items-center justify-center text-white font-black shadow-md" id="headerInitial">?</div>
+        <header class="h-16 bg-white border-b px-4 md:px-8 flex justify-between items-center flex-shrink-0 z-10 relative">
+            <h2 id="sectionTitle" class="text-lg md:text-xl font-black text-ds-blue uppercase italic tracking-tighter truncate pr-4">Home Page</h2>
+            
+            <div class="flex items-center gap-3 md:gap-5">
+                
+                <div class="flex items-center gap-2 pr-3 md:pr-5 border-r border-gray-200">
+                    <a href="https://www.linkedin.com/groups/15488026/" target="_blank" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-[#0A66C2] hover:text-white transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 group">
+                        <i class="fa-brands fa-linkedin-in text-xs group-hover:scale-110 transition-transform"></i>
+                    </a>
+                    
+                    <a href="https://www.instagram.com/aakruti_community?igsh=MWRwYjVhMDRoeHYydA%3D%3D&utm_source=qr" target="_blank" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gradient-to-tr hover:from-[#f09433] hover:via-[#dc2743] hover:to-[#bc1888] hover:text-white transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 group">
+                        <i class="fa-brands fa-instagram text-xs group-hover:scale-110 transition-transform"></i>
+                    </a>
+                    
+                    <a href="https://www.facebook.com/AakrutiContest" target="_blank" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-[#1877F2] hover:text-white transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 group">
+                        <i class="fa-brands fa-facebook-f text-xs group-hover:scale-110 transition-transform"></i>
+                    </a>
+                    
+                    <a href="https://youtube.com/@aakruticommunity?si=WGD5adGBAc996bEf" target="_blank" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-[#FF0000] hover:text-white transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 group">
+                        <i class="fa-brands fa-youtube text-xs group-hover:scale-110 transition-transform"></i>
+                    </a>
+                </div>
+
+                <span id="displayTeamID" class="hidden sm:inline-block text-[10px] md:text-xs font-black text-gray-500 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm uppercase tracking-widest">Team ID: ---</span>
+                <div class="h-9 w-9 md:h-10 md:w-10 bg-gradient-to-br from-red-600 to-red-800 rounded-xl flex items-center justify-center text-white font-black shadow-md border-b-2 border-red-800 flex-shrink-0" id="headerInitial">?</div>
             </div>
         </header>
 
@@ -417,7 +435,7 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     
-                    <a href="https://r1132100503382-eu1-3dswym.3dexperience.3ds.com/community/swym:prd:R1132100503382:community:AH6Out1lTB2kjqDkm0S-Qg?content=swym:prd:R1132100503382:wikitree:_uGc9BusReWBD_r9M7_-gA" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
+                    <a href="https://r1132101069156-indw2-academia-3dswym.3dexperience.3ds.com/community/swym:academia:R1132101069156:community:apqHJOMQSQ2za7_fRhUfmw?content=swym:academia:R1132101069156:wikitree:An9u7FRsT---VC9dtGgVkg" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
                         <div class="h-16 w-16 rounded-2xl bg-red-50 text-sw-red group-hover:bg-sw-red group-hover:text-white transition-colors flex items-center justify-center text-2xl mb-4 shadow-sm">
                             <i class="fa-solid fa-trophy"></i>
                         </div>
@@ -425,7 +443,7 @@
                         <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Introduction to AAKRUTI Innovation Competition</p>
                     </a>
                     
-                    <a href="https://r1132100503382-eu1-3dswym.3dexperience.3ds.com/community/swym:prd:R1132100503382:community:AH6Out1lTB2kjqDkm0S-Qg?content=swym:prd:R1132100503382:wikitree:G-sCyK6mSwSnutkjUfw3EQ" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
+                    <a href="https://r1132101069156-indw2-academia-3dswym.3dexperience.3ds.com/community/swym:academia:R1132101069156:community:apqHJOMQSQ2za7_fRhUfmw?content=swym:academia:R1132101069156:wikitree:fBUcEyJBT3KVjonuj037NQ" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
                         <div class="h-16 w-16 rounded-2xl bg-red-50 text-sw-red group-hover:bg-sw-red group-hover:text-white transition-colors flex items-center justify-center text-2xl mb-4 shadow-sm">
                             <i class="fa-solid fa-lightbulb"></i>
                         </div>
@@ -433,15 +451,15 @@
                         <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">AAKRUTI 2026 Themes</p>
                     </a>
 
-                    <a href="https://r1132100503382-eu1-3dswym.3dexperience.3ds.com/community/swym:prd:R1132100503382:community:AH6Out1lTB2kjqDkm0S-Qg?content=swym:prd:R1132100503382:wikitree:ScdfjHuiRK2n8gPfoYtEPA" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
+                    <a href="https://r1132101069156-indw2-academia-3dswym.3dexperience.3ds.com/community/swym:academia:R1132101069156:community:apqHJOMQSQ2za7_fRhUfmw?content=swym:academia:R1132101069156:wikitree:7MvxPcgmTQKb0pWRNgLD5A" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
                         <div class="h-16 w-16 rounded-2xl bg-red-50 text-sw-red group-hover:bg-sw-red group-hover:text-white transition-colors flex items-center justify-center text-2xl mb-4 shadow-sm">
                             <i class="fa-solid fa-sticky-note"></i>
                         </div>
                         <h4 class="font-black text-ds-blue text-md leading-tight mb-2 uppercase">GUIDELINES</h4>
-                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">AAKRUTI 2026 Guidelines</p>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">AAKRUTI 2026 Registration Guidelines</p>
                     </a>
 
-                    <a href="https://r1132100503382-eu1-3dswym.3dexperience.3ds.com/community/swym:prd:R1132100503382:community:AH6Out1lTB2kjqDkm0S-Qg?content=swym:prd:R1132100503382:wikitree:LxcwWAyTRn-bWoXcUl7GzA" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
+                    <a href="https://r1132101069156-indw2-academia-3dswym.3dexperience.3ds.com/community/swym:academia:R1132101069156:community:apqHJOMQSQ2za7_fRhUfmw?content=swym:academia:R1132101069156:wikitree:Bmfw1ZaVQVeBlJP8byFdHw" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
                         <div class="h-16 w-16 rounded-2xl bg-red-50 text-sw-red group-hover:bg-sw-red group-hover:text-white transition-colors flex items-center justify-center text-2xl mb-4 shadow-sm">
                             <i class="fa-solid fa-book"></i>
                         </div>
@@ -457,7 +475,7 @@
                         <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Team Mentor's Responsibilities</p>
                     </a>
 
-                    <a href="https://r1132100503382-eu1-3dswym.3dexperience.3ds.com/community/swym:prd:R1132100503382:community:AH6Out1lTB2kjqDkm0S-Qg?content=swym:prd:R1132100503382:wikitree:VFBZaDmKRFiefyaeJPzYkw" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
+                    <a href="https://r1132101069156-indw2-academia-3dswym.3dexperience.3ds.com/community/swym:academia:R1132101069156:community:apqHJOMQSQ2za7_fRhUfmw?content=swym:academia:R1132101069156:wikitree:rFKqxBb3Qr6aTUKqsfXPGg" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
                         <div class="h-16 w-16 rounded-2xl bg-red-50 text-sw-red group-hover:bg-sw-red group-hover:text-white transition-colors flex items-center justify-center text-2xl mb-4 shadow-sm">
                             <i class="fa-solid fa-paper-plane"></i>
                         </div>
@@ -465,12 +483,20 @@
                         <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Reference Problem Statements</p>
                     </a>
 
-                    <a href="https://r1132100503382-eu1-3dswym.3dexperience.3ds.com/community/swym:prd:R1132100503382:community:AH6Out1lTB2kjqDkm0S-Qg?content=swym:prd:R1132100503382:wikitree:Oh4JLQBBQe6xsKKSpHbfRQ" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
+                    <a href="https://r1132101069156-indw2-academia-3dswym.3dexperience.3ds.com/community/swym:academia:R1132101069156:community:apqHJOMQSQ2za7_fRhUfmw?content=swym:academia:R1132101069156:wikitree:cnMxx8peQh-r2YtfighFDQ" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
                         <div class="h-16 w-16 rounded-2xl bg-red-50 text-sw-red group-hover:bg-sw-red group-hover:text-white transition-colors flex items-center justify-center text-2xl mb-4 shadow-sm">
                             <i class="fa-solid fa-circle-question"></i>
                         </div>
                         <h4 class="font-black text-ds-blue text-md leading-tight mb-2 uppercase">FAQs</h4>
                         <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Common Queries</p>
+                    </a>
+					
+					<a href="https://drive.google.com/file/d/1xDzLcK1ltvKVTqvpTWFbh9mbKm_NJucO/view?pli=1" target="_blank" rel="noopener noreferrer" class="group bg-white p-6 rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-sw-red hover:shadow-lg transition-all flex flex-col items-center text-center cursor-pointer">
+                        <div class="h-16 w-16 rounded-2xl bg-red-50 text-sw-red group-hover:bg-sw-red group-hover:text-white transition-colors flex items-center justify-center text-2xl mb-4 shadow-sm">
+                            <i class="fa-solid fa-file-text"></i>
+                        </div>
+                        <h4 class="font-black text-ds-blue text-md leading-tight mb-2 uppercase">AAKRUTI_Handbook</h4>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Official AAKRUTI 2026 Handbook</p>
                     </a>
                 </div>
             </section>

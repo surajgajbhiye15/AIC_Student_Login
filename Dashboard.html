@@ -155,12 +155,35 @@
             <button onclick="showSection('wiki', this)" class="sidebar-item w-full flex items-center p-3 rounded-xl text-gray-400 hover:bg-gray-100 transition-all font-bold group">
                 <i class="fa-solid fa-book-open mr-3"></i> Wiki
             </button>
+			<button onclick="showSection('deadlines', this)" class="sidebar-item w-full flex items-center p-3 rounded-xl text-gray-400 hover:bg-gray-100 transition-all font-bold group">
+                <i class="fa-solid fa-calendar-days mr-3"></i> Important Deadlines
+            </button>
+		
+            
+            <div class="flex flex-col w-full">
+                <button onclick="toggleWinnersMenu()" id="winnersMenuBtn" class="sidebar-item w-full flex items-center justify-between p-3 rounded-xl text-gray-400 hover:bg-gray-100 transition-all font-bold group">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-clapperboard mr-3"></i> Past Winners
+                    </div>
+                    <i id="winnersChevron" class="fa-solid fa-chevron-down text-xs transition-transform duration-300"></i>
+                </button>
+                
+                <div id="winnersSubmenu" class="hidden flex-col pl-9 pr-2 mt-1 space-y-1 overflow-hidden">
+                    <button onclick="showWinners('2025', this)" class="w-full flex items-center p-2.5 rounded-lg text-xs text-gray-400 hover:bg-red-50 hover:text-sw-red transition-all font-bold submenu-item tracking-widest uppercase">
+                        <i class="fa-solid fa-play text-[8px] mr-2"></i> 2025 Videos
+                    </button>
+                    <button onclick="showWinners('2024', this)" class="w-full flex items-center p-2.5 rounded-lg text-xs text-gray-400 hover:bg-red-50 hover:text-sw-red transition-all font-bold submenu-item tracking-widest uppercase">
+                        <i class="fa-solid fa-play text-[8px] mr-2"></i> 2024 Videos
+                    </button>
+                </div>
+            </div>
         </nav>
         <div class="p-4 border-t">
             <button onclick="handleLogout()" class="w-full flex items-center p-3 text-gray-400 font-bold hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
                 <i class="fa-solid fa-right-from-bracket mr-3"></i> Logout
             </button>
         </div>
+		
     </aside>
 
     <div class="flex-1 flex flex-col min-w-0">
@@ -450,6 +473,158 @@
                         <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Common Queries</p>
                     </a>
                 </div>
+            </section>
+			<section id="deadlines" class="section-content">
+                <div class="mb-10 text-center md:text-left">
+                    <h2 class="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-ds-blue to-sw-red uppercase italic tracking-tight">Important Deadlines</h2>
+                    <p class="text-gray-500 text-sm font-bold mt-2 uppercase tracking-widest">The AAKRUTI 2026 Journey</p>
+                </div>
+                
+                <div class="bg-white/60 backdrop-blur-xl p-6 md:p-12 rounded-[3rem] border border-gray-100 shadow-2xl relative overflow-hidden">
+                    
+                    <div class="space-y-12 relative before:absolute before:inset-0 before:ml-6 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-1.5 before:bg-gradient-to-b before:from-ds-blue before:via-purple-500 before:to-amber-400 before:rounded-full before:shadow-sm">
+                        
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-default">
+                            <div class="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white bg-gradient-to-br from-green-400 to-emerald-600 text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-[0_0_20px_rgba(52,211,153,0.5)] z-10 transition-transform duration-500 group-hover:scale-125">
+                                <i class="fa-solid fa-flag-checkered text-sm"></i>
+                            </div>
+                            <div class="w-[calc(100%-4.5rem)] md:w-[calc(50%-3rem)] bg-white p-8 rounded-3xl border-t-4 border-t-emerald-500 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+                                <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3 mb-4">
+                                    <h3 class="font-black text-gray-800 text-xl uppercase tracking-tight">Registration Starts</h3>
+                                    <span class="text-[10px] font-black text-white bg-gray-900 px-4 py-2 rounded-full uppercase tracking-widest w-fit shadow-md">Mar 30, 2026</span>
+                                </div>
+                                <p class="text-sm text-gray-500 font-medium leading-relaxed">Portal opens for team formation and mentor registration.</p>
+                            </div>
+                        </div>
+
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-default">
+                            <div class="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white bg-gradient-to-br from-red-500 to-rose-600 text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-[0_0_20px_rgba(244,63,94,0.5)] z-10 transition-transform duration-500 group-hover:scale-125">
+                                <i class="fa-solid fa-stopwatch text-sm"></i>
+                            </div>
+                            <div class="w-[calc(100%-4.5rem)] md:w-[calc(50%-3rem)] bg-white p-8 rounded-3xl border-t-4 border-t-rose-500 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+                                <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3 mb-4">
+                                    <h3 class="font-black text-gray-800 text-xl uppercase tracking-tight">Registration Ends</h3>
+                                    <span class="text-[10px] font-black text-white bg-sw-red px-4 py-2 rounded-full uppercase tracking-widest w-fit shadow-md">May 31, 2026</span>
+                                </div>
+                                <p class="text-sm text-gray-500 font-medium leading-relaxed">Absolute last day to register your team and submit mentor details.</p>
+                            </div>
+                        </div>
+
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-default">
+                            <div class="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white bg-gradient-to-br from-blue-500 to-indigo-600 text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-[0_0_20px_rgba(99,102,241,0.5)] z-10 transition-transform duration-500 group-hover:scale-125">
+                                <i class="fa-solid fa-lightbulb text-sm"></i>
+                            </div>
+                            <div class="w-[calc(100%-4.5rem)] md:w-[calc(50%-3rem)] bg-white p-8 rounded-3xl border-t-4 border-t-indigo-500 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+                                <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3 mb-4">
+                                    <h3 class="font-black text-gray-800 text-xl uppercase tracking-tight">Product Design Phase</h3>
+                                    <span class="text-[10px] font-black text-indigo-600 bg-indigo-50 border border-indigo-200 px-4 py-2 rounded-full uppercase tracking-widest w-fit"><i class="fa-solid fa-gear fa-spin mr-1"></i> Active</span>
+                                </div>
+                                <p class="text-sm text-gray-500 font-medium leading-relaxed">Teams begin working on their core product designs using SOLIDWORKS.</p>
+                            </div>
+                        </div>
+
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-default">
+                            <div class="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white bg-gradient-to-br from-purple-500 to-fuchsia-600 text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-[0_0_20px_rgba(168,85,247,0.5)] z-10 transition-transform duration-500 group-hover:scale-125">
+                                <i class="fa-solid fa-compass-drafting text-sm"></i>
+                            </div>
+                            <div class="w-[calc(100%-4.5rem)] md:w-[calc(50%-3rem)] bg-white p-8 rounded-3xl border-t-4 border-t-purple-500 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+                                <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3 mb-4">
+                                    <h3 class="font-black text-gray-800 text-xl uppercase tracking-tight">IDC Submission</h3>
+                                    <span class="text-[10px] font-black text-white bg-gray-900 px-4 py-2 rounded-full uppercase tracking-widest w-fit shadow-md">Aug 15, 2026</span>
+                                </div>
+                                <p class="text-sm text-gray-500 font-medium leading-relaxed">Deadline to submit your Initial Design Concept and project synopsys.</p>
+                            </div>
+                        </div>
+
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-default">
+                            <div class="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white bg-gradient-to-br from-cyan-500 to-blue-600 text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-[0_0_20px_rgba(6,182,212,0.5)] z-10 transition-transform duration-500 group-hover:scale-125">
+                                <i class="fa-solid fa-microchip text-sm"></i>
+                            </div>
+                            <div class="w-[calc(100%-4.5rem)] md:w-[calc(50%-3rem)] bg-white p-8 rounded-3xl border-t-4 border-t-cyan-500 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+                                <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3 mb-4">
+                                    <h3 class="font-black text-gray-800 text-xl uppercase tracking-tight">Final Product Submission</h3>
+                                    <span class="text-[10px] font-black text-white bg-gray-900 px-4 py-2 rounded-full uppercase tracking-widest w-fit shadow-md">Sep 15, 2026</span>
+                                </div>
+                                <p class="text-sm text-gray-500 font-medium leading-relaxed">Deadline for comprehensive engineering models and FDC reports.</p>
+                            </div>
+                        </div>
+
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-default">
+                            <div class="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white bg-gradient-to-br from-orange-400 to-amber-600 text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-[0_0_20px_rgba(245,158,11,0.5)] z-10 transition-transform duration-500 group-hover:scale-125">
+                                <i class="fa-solid fa-globe text-sm"></i>
+                            </div>
+                            <div class="w-[calc(100%-4.5rem)] md:w-[calc(50%-3rem)] bg-white p-8 rounded-3xl border-t-4 border-t-orange-500 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+                                <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3 mb-4">
+                                    <h3 class="font-black text-gray-800 text-xl uppercase tracking-tight">Regional Finales</h3>
+                                    <span class="text-[10px] font-black text-white bg-gray-900 px-4 py-2 rounded-full uppercase tracking-widest w-fit shadow-md">Oct - Nov 2026</span>
+                                </div>
+                                <p class="text-sm text-gray-500 font-medium leading-relaxed">Top teams pitch their designs to jury panels in their respective regions.</p>
+                            </div>
+                        </div>
+
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group cursor-default">
+                            <div class="flex items-center justify-center w-16 h-16 rounded-full border-4 border-white bg-gradient-to-br from-yellow-400 to-yellow-600 text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-[0_0_30px_rgba(234,179,8,0.7)] z-10 transition-transform duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                <i class="fa-solid fa-trophy text-2xl"></i>
+                            </div>
+                            <div class="w-[calc(100%-4.5rem)] md:w-[calc(50%-3rem)] bg-gradient-to-br from-white via-amber-50 to-orange-50 p-8 rounded-3xl border-2 border-yellow-400 shadow-2xl transition-all duration-500 hover:-translate-y-3 hover:shadow-[0_20px_40px_-15px_rgba(234,179,8,0.4)]">
+                                <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3 mb-4">
+                                    <h3 class="font-black text-amber-700 text-2xl uppercase tracking-tight">International Finale</h3>
+                                    <span class="text-[10px] font-black text-amber-900 bg-amber-200 border border-amber-300 px-4 py-2 rounded-full uppercase tracking-widest w-fit shadow-sm">Feb 14-17, 2027</span>
+                                </div>
+                                <p class="text-sm text-amber-900/80 font-bold leading-relaxed">The ultimate global showdown. Present your groundbreaking designs to Dassault Systèmes executives.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+			<section id="past-winners" class="section-content">
+                <div class="mb-10 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <h2 id="winnersTitle" class="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-ds-blue to-sw-red uppercase italic tracking-tight">Past Winners</h2>
+                        <p class="text-gray-500 text-sm font-bold mt-2 uppercase tracking-widest">Draw inspiration from previous champions</p>
+                    </div>
+                </div>
+
+                <div id="grid-2025" class="winners-grid hidden grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                    
+                    <div class="bg-white rounded-[2rem] overflow-hidden border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300 group flex flex-col hover:-translate-y-2">
+                        <div class="aspect-video bg-gray-900 relative w-full overflow-hidden">
+                            <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube-nocookie.com/embed/A6rxpZErb4w?si=FiLpWk556wQtPEjR" title="2025 Winner" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                        <div class="p-6">
+                            <h4 class="font-black text-ds-blue text-lg uppercase tracking-tight mb-1">Team Innovators</h4>
+                            <p class="text-[10px] text-white bg-sw-red px-3 py-1 rounded-md font-bold uppercase tracking-widest mb-3 w-fit">Smart City Theme</p>
+                            <p class="text-sm text-gray-500 font-medium leading-relaxed">An incredible presentation showcasing an automated waste management system using SOLIDWORKS kinematics.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-[2rem] overflow-hidden border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300 group flex flex-col hover:-translate-y-2">
+                        <div class="aspect-video bg-gray-900 relative w-full overflow-hidden">
+                            <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="2025 Winner" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                        <div class="p-6">
+                            <h4 class="font-black text-ds-blue text-lg uppercase tracking-tight mb-1">Mech Wizards</h4>
+                            <p class="text-[10px] text-white bg-sw-red px-3 py-1 rounded-md font-bold uppercase tracking-widest mb-3 w-fit">Healthcare Theme</p>
+                            <p class="text-sm text-gray-500 font-medium leading-relaxed">A low-cost, 3D-printable prosthetic limb designed for rural communities.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="grid-2024" class="winners-grid hidden grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                    
+                    <div class="bg-white rounded-[2rem] overflow-hidden border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300 group flex flex-col hover:-translate-y-2">
+                        <div class="aspect-video bg-gray-900 relative w-full overflow-hidden">
+                            <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="2024 Winner" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                        <div class="p-6">
+                            <h4 class="font-black text-ds-blue text-lg uppercase tracking-tight mb-1">Aero Dynamics</h4>
+                            <p class="text-[10px] text-white bg-gray-800 px-3 py-1 rounded-md font-bold uppercase tracking-widest mb-3 w-fit">Mobility Theme - 2024</p>
+                            <p class="text-sm text-gray-500 font-medium leading-relaxed">Award-winning drone chassis optimized for high-speed medical deliveries.</p>
+                        </div>
+                    </div>
+                </div>
+
             </section>
 
         </main>
@@ -826,14 +1001,76 @@
             document.querySelectorAll('.section-content').forEach(s => s.classList.remove('section-active'));
             document.getElementById(id).classList.add('section-active');
             document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+			document.querySelectorAll('.submenu-item').forEach(b => {
+                b.classList.remove('text-sw-red', 'bg-red-50');
+                b.classList.add('text-gray-400');
+            });
+            
+            // Optionally close the accordion when navigating away
+            document.getElementById('winnersSubmenu').classList.add('hidden');
+            document.getElementById('winnersSubmenu').classList.remove('flex');
+            document.getElementById('winnersChevron').classList.remove('rotate-180');
             btn.classList.add('active');
             
             let titleText = "Home Page";
             if (id === 'team') titleText = "Team Details";
             else if (id === 'tasks') titleText = "Assigned Tasks";
             else if (id === 'wiki') titleText = "Wiki & Resources";
-            
+            else if (id === 'deadlines') titleText = "Important Deadlines";
             document.getElementById('sectionTitle').innerText = titleText;
+        }
+		
+		// Toggles the Sidebar Accordion
+        function toggleWinnersMenu() {
+            const submenu = document.getElementById('winnersSubmenu');
+            const chevron = document.getElementById('winnersChevron');
+            
+            if (submenu.classList.contains('hidden')) {
+                // Open it
+                submenu.classList.remove('hidden');
+                submenu.classList.add('flex');
+                chevron.classList.add('rotate-180');
+            } else {
+                // Close it
+                submenu.classList.add('hidden');
+                submenu.classList.remove('flex');
+                chevron.classList.remove('rotate-180');
+            }
+        }
+
+        // Handles displaying the actual videos when a year is clicked
+        function showWinners(year, btn) {
+            // 1. Hide all main sections, then show the "past-winners" section
+            document.querySelectorAll('.section-content').forEach(s => s.classList.remove('section-active'));
+            document.getElementById('past-winners').classList.add('section-active');
+            
+            // 2. Reset standard sidebar buttons
+            document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+            
+            // 3. Highlight the "Past Winners" parent button
+            document.getElementById('winnersMenuBtn').classList.add('active');
+            
+            // 4. Handle submenu active states (highlight the year they clicked)
+            document.querySelectorAll('.submenu-item').forEach(b => {
+                b.classList.remove('text-sw-red', 'bg-red-50');
+                b.classList.add('text-gray-400');
+            });
+            btn.classList.remove('text-gray-400');
+            btn.classList.add('text-sw-red', 'bg-red-50');
+            
+            // 5. Update the Header & Page Title
+            document.getElementById('sectionTitle').innerText = `Winners Gallery (${year})`;
+            document.getElementById('winnersTitle').innerText = `${year} Champions`;
+
+            // 6. Hide all video grids, then show the specific year they clicked
+            document.querySelectorAll('.winners-grid').forEach(g => {
+                g.classList.add('hidden');
+                g.classList.remove('grid'); // Safely strip grid class when hidden
+            });
+            
+            const activeGrid = document.getElementById(`grid-${year}`);
+            activeGrid.classList.remove('hidden');
+            activeGrid.classList.add('grid'); // Re-apply grid layout
         }
 
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }

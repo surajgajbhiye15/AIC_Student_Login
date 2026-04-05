@@ -1875,34 +1875,52 @@
             const profile = JSON.parse(localStorage.getItem('teamProfile'));
             if (!profile) return showCustomAlert("Team profile missing.", "Error");
 
-            // 1. Grab the button that was clicked so we can show a loading spinner
+            // 1. Grab the button and trigger the spinner
             const btn = event.currentTarget;
             const originalText = btn.innerHTML;
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Generating...`;
             btn.disabled = true;
 
-            // 2. Pack the data into the digital backpack
+            // 2. Pack the data
             const safeData = encodeURIComponent(JSON.stringify(profile));
             const url = `certificates.html?data=${safeData}`;
 
             // 3. 🚀 THE GHOST FRAME 🚀 
-            // Create an invisible iframe to run the certificate code in the background
             const hiddenIframe = document.createElement('iframe');
-            hiddenIframe.style.display = 'none'; // Keep it completely invisible!
+            hiddenIframe.style.display = 'none';
             hiddenIframe.src = url;
             document.body.appendChild(hiddenIframe);
 
-            // 4. THE FIX: Reset the UI after 8 seconds (so the user isn't locked out)
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }, 8000);
+            // 4. 📻 THE WALKIE-TALKIE LISTENER
+            // This waits for the specific "done" signal from certificates.html
+            const messageHandler = function(event) {
+                if (event.data === 'certificate_downloaded') {
+                    // Reset the button the exact millisecond it finishes!
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    
+                    // Destroy the ghost frame safely
+                    if (document.body.contains(hiddenIframe)) {
+                        document.body.removeChild(hiddenIframe);
+                    }
+                    
+                    // Turn off the walkie-talkie so it doesn't listen forever
+                    window.removeEventListener('message', messageHandler);
+                }
+            };
+            window.addEventListener('message', messageHandler);
 
-            // 5. THE FIX: Wait a full 15 seconds before destroying the frame!
-            // This guarantees the PDF engine has enough time to download images from GitHub.
+            // 5. THE ULTIMATE FAILSAFE (15 seconds)
+            // Just in case their internet drops completely and the iframe crashes silently
             setTimeout(() => {
-                if (document.body.contains(hiddenIframe)) {
-                    document.body.removeChild(hiddenIframe); // Safely destroy the ghost frame
+                if (btn.disabled) { // If it's STILL spinning after 15s, force a reset
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    if (document.body.contains(hiddenIframe)) {
+                        document.body.removeChild(hiddenIframe);
+                    }
+                    window.removeEventListener('message', messageHandler);
+                    showCustomAlert("Generation timed out. Please check your internet connection and try again.", "Timeout Error");
                 }
             }, 15000); 
         }

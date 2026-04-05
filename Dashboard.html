@@ -1892,12 +1892,19 @@
             hiddenIframe.src = url;
             document.body.appendChild(hiddenIframe);
 
-            // 4. Clean up after 3 seconds (gives the PDF plenty of time to download)
+            // 4. THE FIX: Reset the UI after 8 seconds (so the user isn't locked out)
             setTimeout(() => {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
-                document.body.removeChild(hiddenIframe); // Destroy the ghost frame
-            }, 3000);
+            }, 8000);
+
+            // 5. THE FIX: Wait a full 15 seconds before destroying the frame!
+            // This guarantees the PDF engine has enough time to download images from GitHub.
+            setTimeout(() => {
+                if (document.body.contains(hiddenIframe)) {
+                    document.body.removeChild(hiddenIframe); // Safely destroy the ghost frame
+                }
+            }, 15000); 
         }
     </script>
 </body>
